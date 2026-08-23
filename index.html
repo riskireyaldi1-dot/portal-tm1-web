@@ -6,6 +6,7 @@
   <title>Portal Resmi Kelas TM-1</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="musicplayer.css">
+  <link rel="stylesheet" href="chess.css">
 </head>
 <body>
 
@@ -25,7 +26,9 @@
   <div class="bg-mesh"></div>
   <div class="bg-grid"></div>
 
-  <div class="mobile-toggle" onclick="toggleSidebar()">☰</div>
+  <div class="mobile-toggle" onclick="toggleSidebar()">
+    <svg id="mobileToggleIcon" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </div>
 
   <div class="app-container">
     <aside class="sidebar" id="sidebar">
@@ -85,10 +88,14 @@
           Music Player
           <span class="nav-music-indicator" id="navMusicIndicator" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
+        <div class="nav-item" id="navChess" onclick="navigateTo('chess', this)">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6l1.5 7h-9L9 12z"/></svg>
+          TM Chess
+        </div>
       </nav>
       <div class="sidebar-footer">
         <button class="music-btn" id="musicToggle" onclick="toggleMusik()">
-          <span id="musicIcon">🎵</span> Musik Mars Sekolah
+          <svg id="musicIcon" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Musik Mars Sekolah
         </button>
         <div style="margin-top:10px">© 2026 Kelas TM-1</div>
       </div>
@@ -103,76 +110,76 @@
             <h2>Selamat Datang, Siswa TM-1!</h2>
             <p>Portal Resmi Kelas TM-1 adalah pusat informasi dan aktivitas kelas. Akses jadwal pelajaran, piket harian, data siswa, struktur kelas, dan pengumuman dengan mudah.</p>
             <div class="class-badge">
-              <span>📚</span>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
               <span>TM-1 | SMK Perguruan Cikini-KIIC Karawang | 2026/2027</span>
             </div>
             <div class="class-badge" style="margin-left:12px">
-              <span>👨‍🏫</span>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10.5V16c0 1.657 3.134 3 7 3s7-1.343 7-3v-5.5"/></svg>
               <span>Wali Kelas: Pak Rapi Nugraha S.pd</span>
             </div>
           </div>
         </div>
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-icon blue">👥</div>
+            <div class="stat-icon blue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg></div>
             <div class="stat-value">36</div>
             <div class="stat-label">Jumlah Siswa</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon cyan">🛠️</div>
+            <div class="stat-icon cyan"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
             <div class="stat-value">Permesinan</div>
             <div class="stat-label">Jurusan Teknik Manufaktur</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon purple">📢</div>
+            <div class="stat-icon purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg></div>
             <div class="stat-value" id="stat-pengumuman">0</div>
             <div class="stat-label">Pengumuman</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon green">🎯</div>
+            <div class="stat-icon green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
             <div class="stat-value" id="stat-kegiatan">0</div>
             <div class="stat-label">Kegiatan</div>
           </div>
         </div>
-        <h3 class="section-title">🚀 Menu Cepat</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg> Menu Cepat</h3>
         <p class="section-subtitle">Akses fitur utama dengan satu klik</p>
         <div class="quick-menu">
           <div class="quick-item" onclick="navigateTo('students', document.querySelectorAll('.nav-item')[1])">
-            <div class="quick-item-icon">👥</div>
+            <div class="quick-item-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg></div>
             <h4>Data Siswa</h4>
             <p>Lihat dan cari data siswa</p>
           </div>
           <div class="quick-item" onclick="navigateTo('piket', document.querySelectorAll('.nav-item')[2])">
-            <div class="quick-item-icon">🧹</div>
+            <div class="quick-item-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M4 8h16M5 8h14a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a1 1 0 011-1z"/></svg></div>
             <h4>Piket Harian</h4>
             <p>Jadwal piket kelas</p>
           </div>
           <div class="quick-item" onclick="navigateTo('schedule', document.querySelectorAll('.nav-item')[3])">
-            <div class="quick-item-icon">📅</div>
+            <div class="quick-item-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
             <h4>Jadwal</h4>
             <p>Jadwal pelajaran harian</p>
           </div>
           <div class="quick-item" onclick="navigateTo('announcements', document.querySelectorAll('.nav-item')[6])">
-            <div class="quick-item-icon">📢</div>
+            <div class="quick-item-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg></div>
             <h4>Pengumuman</h4>
             <p>Info dan pengumuman kelas</p>
           </div>
         </div>
-        <h3 class="section-title">📢 Pengumuman Terbaru</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg> Pengumuman Terbaru</h3>
         <p class="section-subtitle">Informasi terkini dari kelas</p>
         <div id="home-announcements"></div>
       </div>
 
       <!-- STUDENTS -->
       <div class="page" id="page-students">
-        <h3 class="section-title">👥 Data Siswa</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg> Data Siswa</h3>
         <p class="section-subtitle">Daftar lengkap siswa kelas TM-1</p>
         <div class="search-bar">
           <input type="text" class="search-input" id="student-search" placeholder="Cari nama siswa..." oninput="filterStudents()">
         </div>
         <div class="student-grid" id="student-grid"></div>
         <div class="empty-state" id="student-empty" style="display:none">
-          <div class="empty-state-icon">🔍</div>
+          <div class="empty-state-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg></div>
           <h4>Tidak ada siswa ditemukan</h4>
           <p>Coba ubah kata kunci pencarian</p>
         </div>
@@ -180,14 +187,14 @@
 
       <!-- PIKET -->
       <div class="page" id="page-piket">
-        <h3 class="section-title">🧹 Piket Harian</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M4 8h16M5 8h14a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a1 1 0 011-1z"/></svg> Piket Harian</h3>
         <p class="section-subtitle">Jadwal piket kebersihan kelas TM-1</p>
         <div class="info-list" id="piket-list"></div>
       </div>
 
       <!-- SCHEDULE -->
       <div class="page" id="page-schedule">
-        <h3 class="section-title">📅 Jadwal Pelajaran</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> Jadwal Pelajaran</h3>
         <p class="section-subtitle">Jadwal mata pelajaran kelas TM-1</p>
         <p class="jadwal-now" id="jadwalNow">Jam sekarang: --:-- WIB</p>
         <div class="schedule-tabs" id="hariPills">
@@ -202,54 +209,54 @@
 
       <!-- STRUKTUR -->
       <div class="page" id="page-struktur">
-        <h3 class="section-title">🗂️ Struktur Kelas</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0H5a2 2 0 01-2-2v-4m6 6h10a2 2 0 002-2v-4m-6-6h6a2 2 0 012 2v0M3 9h18"/></svg> Struktur Kelas</h3>
         <p class="section-subtitle">Pengurus kelas TM-1 tahun ajaran 2026/2027</p>
         <div class="info-list" id="struktur-list"></div>
       </div>
 
       <!-- SOSMED -->
       <div class="page" id="page-sosmed">
-        <h3 class="section-title">🔗 Media Sosial Kelas</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342a3 3 0 100-2.684m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg> Media Sosial Kelas</h3>
         <p class="section-subtitle">Ikuti dan gabung media sosial kelas TM-1</p>
         <div class="sosmed-grid" id="sosmed-list"></div>
       </div>
 
       <!-- ANNOUNCEMENTS -->
       <div class="page" id="page-announcements">
-        <h3 class="section-title">📢 Pengumuman</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg> Pengumuman</h3>
         <p class="section-subtitle">Informasi dan pengumuman penting kelas</p>
         <div class="announcement-list" id="announcement-list"></div>
       </div>
 
       <!-- ACTIVITIES -->
       <div class="page" id="page-activities">
-        <h3 class="section-title">🎯 Kegiatan Kelas</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Kegiatan Kelas</h3>
         <p class="section-subtitle">Agenda dan kegiatan yang akan dan telah dilaksanakan</p>
         <div class="activity-timeline" id="activity-timeline"></div>
       </div>
 
       <!-- ABOUT -->
       <div class="page" id="page-about">
-        <h3 class="section-title">ℹ️ Tentang Kelas</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Tentang Kelas</h3>
         <p class="section-subtitle">Informasi umum tentang kelas TM-1</p>
         <div class="about-grid">
           <div class="about-card">
-            <div class="about-icon">🏫</div>
+            <div class="about-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2M5 21H3m16 0h-2M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8v-4a1 1 0 011-1h0a1 1 0 011 1v4"/></svg></div>
             <h3>Sekolah</h3>
             <p>SMK Perguruan Cikini-KIIC Karawang.</p>
           </div>
           <div class="about-card">
-            <div class="about-icon">🛠️</div>
+            <div class="about-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
             <h3>Jurusan</h3>
             <p>Teknik Manufaktur — Permesinan.</p>
           </div>
           <div class="about-card">
-            <div class="about-icon">👨‍🏫</div>
+            <div class="about-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10.5V16c0 1.657 3.134 3 7 3s7-1.343 7-3v-5.5"/></svg></div>
             <h3>Wali Kelas</h3>
             <p>Bapak Rapi Nugraha, S.Pd.</p>
           </div>
           <div class="about-card">
-            <div class="about-icon">👥</div>
+            <div class="about-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg></div>
             <h3>Jumlah Siswa</h3>
             <p>36 siswa, seluruhnya laki-laki.</p>
           </div>
@@ -258,13 +265,14 @@
 
       <!-- ISI DATA SAYA -->
       <div class="page" id="page-isidata">
-        <h3 class="section-title">📝 Isi Data Saya</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> Isi Data Saya</h3>
         <p class="section-subtitle">Lengkapi No. Telepon, Instagram, dan hari piket kamu sendiri</p>
 
         <div class="isidata-card">
           <p class="isidata-note">
-            ⚠️ Karena website ini belum punya sistem login, tolong isi <strong>data kamu sendiri</strong> ya —
-            pilih nama kamu sesuai daftar, lalu isi/perbarui datanya.
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1.5 1.5 0 001.3 2.25h17.76a1.5 1.5 0 001.3-2.25L13.71 3.86a1.5 1.5 0 00-2.42 0z"/></svg>
+            <span>Karena website ini belum punya sistem login, tolong isi <strong>data kamu sendiri</strong> ya —
+            pilih nama kamu sesuai daftar, lalu isi/perbarui datanya.</span>
           </p>
 
           <form id="formIsiData" class="isidata-form">
@@ -294,7 +302,7 @@
 
       <!-- MUSIC PLAYER -->
       <div class="page" id="page-musicplayer">
-        <h3 class="section-title">🎧 Music Player</h3>
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Music Player</h3>
         <p class="section-subtitle">Dengarkan Mars Sekolah atau pilih lagu lain dari playlist</p>
 
         <div class="mp-page">
@@ -346,6 +354,197 @@
         </div>
       </div>
 
+      <!-- TM CHESS (mini game) -->
+      <div class="page" id="page-chess">
+        <div class="tmc-shell" id="tmcShell">
+
+          <!-- TOPBAR -->
+          <div class="tmc-topbar">
+            <div class="tmc-brand"><span class="tmc-brand-mark">TM</span><span>TM <b>Chess</b></span></div>
+            <div class="tmc-game-meta" id="tmcGameMeta"><span class="tmc-live-dot"></span>Permainan Lokal</div>
+            <div class="tmc-top-actions">
+              <button aria-label="Putar Papan" title="Putar Papan" onclick="tmcFlipBoard()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5M4 9a8 8 0 0114-4.9M20 15a8 8 0 01-14 4.9"/></svg>
+              </button>
+              <button aria-label="Suara" title="Suara" class="tmc-sound-icon-btn" onclick="tmcToggleSound(this)">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19 9a5 5 0 010 6"/></svg>
+              </button>
+              <button aria-label="Layar Penuh" title="Layar Penuh" class="tmc-fullscreen-btn" onclick="tmcToggleFullscreen()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V5a1 1 0 011-1h3m9 0h3a1 1 0 011 1v3m0 8v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg>
+              </button>
+              <button aria-label="Menu" title="Kembali ke Menu" onclick="tmcBackToSetup()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 6h14M5 18h14"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- SETUP -->
+          <div style="padding:28px 22px" id="tmcSetupCard">
+            <div class="tmc-setup-card">
+              <div class="tmc-setup-group">
+                <div class="tmc-setup-label">Nama Pemain</div>
+                <div class="tmc-chip-row" style="gap:12px">
+                  <input type="text" id="tmcNameWInput" class="tmc-name-input" placeholder="Pemain Putih">
+                  <input type="text" id="tmcNameBInput" class="tmc-name-input" placeholder="Pemain Hitam">
+                </div>
+              </div>
+
+              <div class="tmc-setup-group">
+                <div class="tmc-setup-label">Kontrol Waktu</div>
+                <div class="tmc-chip-row">
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('1+0', this)">1+0</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('2+1', this)">2+1</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('3+0', this)">3+0</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('3+2', this)">3+2</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('5+0', this)">5+0</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('5+3', this)">5+3</div>
+                  <div class="tmc-chip tmc-time-chip active" onclick="tmcSelectTimePreset('10+0', this)">10+0</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('10+5', this)">10+5</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('15+10', this)">15+10</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('unlimited', this)">Tanpa Batas</div>
+                  <div class="tmc-chip tmc-time-chip" onclick="tmcSelectTimePreset('custom', this)">Custom</div>
+                </div>
+                <div class="tmc-custom-row" id="tmcCustomTimeRow" style="display:none">
+                  <input type="number" min="0" id="tmcCustomMin" placeholder="Menit" value="10">
+                  <span style="color:var(--tmc-muted);font-size:12px">menit +</span>
+                  <input type="number" min="0" id="tmcCustomInc" placeholder="Detik" value="0">
+                  <span style="color:var(--tmc-muted);font-size:12px">detik/langkah</span>
+                </div>
+              </div>
+
+              <div class="tmc-setup-group">
+                <div class="tmc-setup-label">Suara</div>
+                <div class="tmc-sound-toggle">
+                  <span>Efek suara langkah, tangkap, skak, dsb.</span>
+                  <div class="tmc-switch on" id="tmcSoundSwitch" onclick="tmcToggleSound(this)"></div>
+                </div>
+              </div>
+
+              <button class="tmc-start-btn" onclick="tmcHandleStartClick()">Mulai Permainan</button>
+            </div>
+          </div>
+
+          <!-- GAME AREA -->
+          <div class="tmc-game-area" id="tmcGameArea">
+            <section class="tmc-board-region">
+              <div class="tmc-bar" id="tmcBarB">
+                <div class="tmc-bar-id">
+                  <div class="tmc-avatar" id="tmcAvatarB">B</div>
+                  <div class="tmc-bar-name-wrap">
+                    <span class="tmc-bar-name" id="tmcNameB">Pemain Hitam</span>
+                    <div class="tmc-bar-caps" id="tmcCapturedB"></div>
+                  </div>
+                </div>
+                <div class="tmc-clock" id="tmcClockB"><span class="tmc-clock-time">10:00</span><small class="tmc-clock-label">MENUNGGU</small></div>
+              </div>
+
+              <div class="tmc-status-strip" id="tmcStatusText"></div>
+
+              <div class="tmc-board-frame">
+                <div class="tmc-board" id="tmcBoard"></div>
+              </div>
+
+              <div class="tmc-bar" id="tmcBarW">
+                <div class="tmc-bar-id">
+                  <div class="tmc-avatar" id="tmcAvatarW">W</div>
+                  <div class="tmc-bar-name-wrap">
+                    <span class="tmc-bar-name" id="tmcNameW">Pemain Putih</span>
+                    <div class="tmc-bar-caps" id="tmcCapturedW"></div>
+                  </div>
+                </div>
+                <div class="tmc-clock" id="tmcClockW"><span class="tmc-clock-time">10:00</span><small class="tmc-clock-label">GILIRAN</small></div>
+              </div>
+
+              <div class="tmc-mobile-controls">
+                <button class="tmc-ctrl tmc-undo-btn" onclick="tmcHandleUndo()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4 4-4m-4 4h11a4 4 0 010 8h-1"/></svg><span>Undo</span></button>
+                <button class="tmc-ctrl" onclick="tmcOfferDraw()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9h14M5 15h14"/></svg><span>Seri</span></button>
+                <button class="tmc-ctrl tmc-ctrl-danger" onclick="tmcResign(TMC.turn)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3v18M6 4h9l-2 3 2 3H6"/></svg><span>Resign</span></button>
+                <button class="tmc-ctrl" onclick="tmcToggleMoveSheet()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Riwayat</span></button>
+              </div>
+            </section>
+
+            <!-- SIDE PANEL (desktop) -->
+            <aside class="tmc-side-panel">
+              <div class="tmc-panel-tabs">
+                <button class="tmc-tab-btn tmc-tab-active" data-tab="moves" onclick="tmcSwitchTab('moves')">Langkah</button>
+                <button class="tmc-tab-btn" data-tab="chat" onclick="tmcSwitchTab('chat')">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                  Chat
+                </button>
+              </div>
+
+              <div class="tmc-tab-panel tmc-tab-panel-active" data-tab-panel="moves">
+                <div class="tmc-notation-head"><span>Riwayat Langkah</span></div>
+                <div class="tmc-movelist" id="tmcMoveList"></div>
+                <div class="tmc-captured-section">
+                  <span>Bidak Tertangkap</span>
+                  <div class="tmc-captured-pieces">
+                    <div id="tmcCapturedDisplayB"></div>
+                    <div id="tmcCapturedDisplayW"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tmc-tab-panel" data-tab-panel="chat">
+                <div class="tmc-chat-empty">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                  <strong>Obrolan permainan</strong>
+                  <span>Tetap sopan dan fokus.</span>
+                </div>
+              </div>
+
+              <div class="tmc-side-controls">
+                <button class="tmc-ctrl tmc-undo-btn" onclick="tmcHandleUndo()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4 4-4m-4 4h11a4 4 0 010 8h-1"/></svg>Undo</button>
+                <button class="tmc-ctrl" onclick="tmcOfferDraw()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9h14M5 15h14"/></svg>Seri</button>
+                <button class="tmc-ctrl tmc-ctrl-danger" onclick="tmcResign(TMC.turn)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3v18M6 4h9l-2 3 2 3H6"/></svg>Resign</button>
+              </div>
+            </aside>
+          </div>
+
+          <!-- MOBILE: tombol buka riwayat langkah -->
+          <div class="tmc-mobile-panel" id="tmcMobilePanel">
+            <button onclick="tmcToggleMoveSheet()">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <span>Riwayat Langkah</span>
+            </button>
+          </div>
+          <div class="tmc-sheet" id="tmcMoveSheet">
+            <div class="tmc-sheet-handle"></div>
+            <div class="tmc-sheet-title">Riwayat Langkah</div>
+            <div class="tmc-movelist" id="tmcMoveListMobile"></div>
+          </div>
+
+        </div>
+
+        <!-- modal promosi pion -->
+        <div class="modal-overlay" id="tmcPromoModal">
+          <div class="modal" style="max-width:340px">
+            <div class="modal-header"><h3>Promosi Pion</h3></div>
+            <div class="modal-body" style="display:flex;gap:10px;justify-content:center" id="tmcPromoOptions"></div>
+          </div>
+        </div>
+
+        <!-- modal hasil pertandingan -->
+        <div class="modal-overlay tmc-result-modal" id="tmcResultModal">
+          <div class="modal">
+            <div class="tmc-result-burst"></div>
+            <div class="modal-body">
+              <div class="tmc-result-icon" id="tmcResultIcon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M8 21h8m-4-4v4M6 4h12v3a6 6 0 01-6 6 6 6 0 01-6-6V4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M6 5H3v2a3 3 0 003 3M18 5h3v2a3 3 0 01-3 3"/></svg>
+              </div>
+              <div class="tmc-result-eyebrow" id="tmcResultEyebrow">SKAKMAT</div>
+              <div class="tmc-result-title" id="tmcResultTitle">Selesai</div>
+              <div class="tmc-result-sub" id="tmcResultSub"></div>
+              <div class="tmc-controls-row" style="justify-content:center;display:flex;gap:8px">
+                <button class="tmc-start-btn" style="margin:0;flex:1" onclick="tmcRematch()">Main Lagi</button>
+                <button class="tmc-ctrl tmc-modal-btn" onclick="tmcBackToSetup()">Ke Menu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </main>
   </div>
 
@@ -353,7 +552,7 @@
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h3>Detail Siswa</h3>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <button class="modal-close" onclick="closeModal()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="modal-body" id="modal-body"></div>
     </div>
@@ -371,5 +570,6 @@
   <script src="script.js"></script>
   <script src="database.js"></script>
   <script src="musicplayer.js"></script>
+  <script src="chess.js"></script>
 </body>
 </html>
