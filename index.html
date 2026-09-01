@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="musicplayer.css">
   <link rel="stylesheet" href="chess.css">
+  <link rel="stylesheet" href="uno.css">
+  <link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
@@ -16,11 +18,53 @@
       <div class="welcome-logo">
         <img src="logo-sekolah.png" alt="Logo SMK Perguruan Cikini-KIIC">
       </div>
-      <p class="welcome-sub">SELAMAT DATANG DI</p>
-      <h1 class="welcome-title">Welcome Class X-TM-1</h1>
+      <p class="welcome-sub">Selamat Datang di</p>
+      <h1 class="welcome-title">
+        <span class="welcome-title-line1">Welcome</span>
+        <span class="welcome-title-line2">Class X-TM-1</span>
+      </h1>
       <p class="welcome-desc">Portal Resmi Kelas TM-1<br>SMK Perguruan Cikini-KIIC Karawang</p>
-      <button class="welcome-btn" onclick="masukWebsite()">Masuk</button>
+      <button class="welcome-btn" onclick="masukWebsite()">
+        <span>Masuk ke Portal</span>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </button>
+
+      <div class="welcome-features">
+        <div class="welcome-feature">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.083 12.083 0 01.665-6.479L12 14z"/></svg>
+          <div><strong>Kelas TM-1</strong><span>Bersatu &amp; Berprestasi</span></div>
+        </div>
+        <div class="welcome-feature">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <div><strong>Disiplin</strong><span>Kunci Kesuksesan</span></div>
+        </div>
+        <div class="welcome-feature">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.472V16a1 1 0 001 1h6a1 1 0 001-1v-2.528A6 6 0 0012 3z"/></svg>
+          <div><strong>Inovasi</strong><span>Untuk Masa Depan</span></div>
+        </div>
+        <div class="welcome-feature">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M8 21h8m-4-4v4M6 4h12v3a6 6 0 01-6 6 6 6 0 01-6-6V4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M6 5H3v2a3 3 0 003 3M18 5h3v2a3 3 0 01-3 3"/></svg>
+          <div><strong>Prestasi</strong><span>Target &amp; Hasil</span></div>
+        </div>
+      </div>
+
+      <p class="welcome-footer">© 2026 Portal Resmi Kelas TM-1<br>SMK Perguruan Cikini-KIIC Karawang</p>
     </div>
+  </div>
+
+  <!-- AUTH SCREEN (Login / Daftar) -->
+  <div class="auth-screen hide" id="authScreen">
+    <div class="auth-stage">
+      <form class="auth-form" id="authLoginForm" novalidate onsubmit="return authHandleLogin(event)">
+        <h2>Masuk</h2>
+        <div class="auth-error" id="authLoginError"></div>
+        <input type="email" id="authLoginEmail" placeholder="Email" autocomplete="email" required>
+        <input type="password" id="authLoginPassword" placeholder="Password" autocomplete="current-password" required>
+        <button type="submit" id="authLoginBtn">Masuk</button>
+      </form>
+    </div>
+
+    <p class="auth-skip-note">Belum punya akun? Hubungi admin kelas untuk dibuatkan akun, atau <button type="button" class="auth-skip-btn" onclick="authContinueAsGuest()">lanjut sebagai Tamu</button></p>
   </div>
 
   <div class="bg-mesh"></div>
@@ -92,8 +136,16 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6l1.5 7h-9L9 12z"/></svg>
           TM Chess
         </div>
+        <div class="nav-item" id="navUno" onclick="navigateTo('uno', this)">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" stroke-width="2" transform="rotate(-8 12 12)"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
+          UNO
+        </div>
       </nav>
       <div class="sidebar-footer">
+        <div id="authIdentityBox" class="auth-identity-box">
+          <span id="authIdentityText">Tamu</span>
+          <button id="authIdentityBtn" onclick="authIdentityBtnClick()">Masuk</button>
+        </div>
         <button class="music-btn" id="musicToggle" onclick="toggleMusik()">
           <svg id="musicIcon" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Musik Mars Sekolah
         </button>
@@ -545,6 +597,200 @@
 
       </div>
 
+      <!-- UNO -->
+      <div class="page" id="page-uno">
+        <div class="uno-shell" id="unoShell">
+
+          <!-- HEADER -->
+          <div class="uno-header">
+            <div class="uno-header-left">
+              <div class="uno-logo-mark">U</div>
+              <div class="uno-header-title">UNO</div>
+            </div>
+            <div class="uno-header-meta">
+              <div class="uno-meta-item"><span class="uno-meta-label">Mode</span><span class="uno-meta-value" id="unoHeaderMode">—</span></div>
+              <div class="uno-meta-item"><span class="uno-meta-label">Putaran</span><span class="uno-meta-value" id="unoHeaderRound">1</span></div>
+            </div>
+            <div class="uno-header-actions">
+              <button aria-label="Layar Penuh" title="Layar Penuh" class="uno-fullscreen-btn" onclick="unoToggleFullscreen()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V5a1 1 0 011-1h3m9 0h3a1 1 0 011 1v3m0 8v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg>
+              </button>
+              <button aria-label="Suara" title="Suara" class="uno-sound-btn" onclick="unoToggleSound(this)">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19 9a5 5 0 010 6"/></svg>
+              </button>
+              <button aria-label="Menu" title="Kembali ke Menu" onclick="unoBackToSetup()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 6h14M5 18h14"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- SETUP -->
+          <div style="padding:10px 20px" id="unoSetupCard">
+            <div class="uno-setup-card">
+              <div class="uno-setup-group">
+                <div class="uno-setup-label">Mode Permainan</div>
+                <div class="uno-mode-row">
+                  <div class="uno-mode-btn active" onclick="unoSelectMode('bot', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M4 8h16M5 8h14a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a1 1 0 011-1zM9 13h.01M15 13h.01"/></svg>
+                    <strong>Vs Bot</strong>
+                    <span>Main sendiri lawan AI</span>
+                  </div>
+                  <div class="uno-mode-btn" onclick="unoSelectMode('local', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
+                    <strong>Multiplayer Lokal</strong>
+                    <span>Gantian di 1 HP</span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="unoBotOptions">
+                <div class="uno-setup-group">
+                  <div class="uno-setup-label">Nama Kamu</div>
+                  <input type="text" id="unoBotPlayerName" class="uno-name-input" placeholder="Pemain" maxlength="14">
+                </div>
+                <div class="uno-setup-group">
+                  <div class="uno-setup-label">Jumlah Bot</div>
+                  <div class="uno-chip-row">
+                    <div class="uno-chip uno-botcount-chip" onclick="unoSelectBotCount(1, this)">1 Bot</div>
+                    <div class="uno-chip uno-botcount-chip active" onclick="unoSelectBotCount(2, this)">2 Bot</div>
+                    <div class="uno-chip uno-botcount-chip" onclick="unoSelectBotCount(3, this)">3 Bot</div>
+                  </div>
+                </div>
+                <div class="uno-setup-group">
+                  <div class="uno-setup-label">Kesulitan Bot</div>
+                  <div class="uno-chip-row">
+                    <div class="uno-chip uno-diff-chip diff-easy" onclick="unoSelectDifficulty('easy', this)">Easy</div>
+                    <div class="uno-chip uno-diff-chip diff-normal active" onclick="unoSelectDifficulty('normal', this)">Normal</div>
+                    <div class="uno-chip uno-diff-chip diff-hard" onclick="unoSelectDifficulty('hard', this)">Hard</div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="unoLocalOptions" style="display:none">
+                <div class="uno-setup-group">
+                  <div class="uno-setup-label">Jumlah Pemain</div>
+                  <div class="uno-chip-row">
+                    <div class="uno-chip uno-localcount-chip active" onclick="unoSelectLocalCount(2, this)">2 Pemain</div>
+                    <div class="uno-chip uno-localcount-chip" onclick="unoSelectLocalCount(3, this)">3 Pemain</div>
+                    <div class="uno-chip uno-localcount-chip" onclick="unoSelectLocalCount(4, this)">4 Pemain</div>
+                  </div>
+                </div>
+                <div class="uno-setup-group">
+                  <div class="uno-setup-label">Nama Pemain</div>
+                  <div id="unoLocalNames">
+                    <input type="text" class="uno-name-input uno-local-name-input" placeholder="Nama Pemain 1" maxlength="14">
+                    <input type="text" class="uno-name-input uno-local-name-input" placeholder="Nama Pemain 2" maxlength="14">
+                  </div>
+                </div>
+              </div>
+
+              <button class="uno-start-btn" onclick="unoHandleStartClick()">Mulai Permainan</button>
+            </div>
+          </div>
+
+          <!-- GAME AREA -->
+          <div class="uno-game-area" id="unoGameArea">
+
+            <div class="uno-arena-wrap">
+              <div class="uno-arena" id="unoArena">
+                <div class="uno-opp-slot uno-slot-top" id="unoSlotTop"></div>
+                <div class="uno-opp-slot uno-slot-left" id="unoSlotLeft"></div>
+                <div class="uno-opp-slot uno-slot-right" id="unoSlotRight"></div>
+
+                <div class="uno-arena-center">
+                  <button class="uno-drawpile" id="unoDrawPileBtn" onclick="unoHandleDrawClick()">
+                    <div class="uno-drawpile-inner">
+                      <div class="uno-card-back uno-card-lg"><div class="uno-card-back-pattern"></div></div>
+                      <div class="uno-drawstack-badge" id="unoDrawStackBadge" style="display:none"></div>
+                    </div>
+                    <span class="uno-drawpile-label">Tarik (<span id="unoDeckCount">0</span>)</span>
+                  </button>
+
+                  <div class="uno-direction-ring spin" id="unoDirRing">
+                    <svg id="unoDirIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M17 8l4 4-4 4M3 12h18"/></svg>
+                  </div>
+                  <div id="unoTableTop"></div>
+                </div>
+
+                <!-- pemilih warna (kartu wild) -->
+                <div class="uno-overlay-abs" id="unoColorPicker">
+                  <div class="uno-colorpicker-title">Pilih Warna</div>
+                  <div class="uno-colorpicker-grid">
+                    <div class="uno-color-swatch" style="background:#ef4444" onclick="unoHandleColorPick('red')"></div>
+                    <div class="uno-color-swatch" style="background:#fbbf24" onclick="unoHandleColorPick('yellow')"></div>
+                    <div class="uno-color-swatch" style="background:#22c55e" onclick="unoHandleColorPick('green')"></div>
+                    <div class="uno-color-swatch" style="background:#3b82f6" onclick="unoHandleColorPick('blue')"></div>
+                  </div>
+                </div>
+
+                <!-- overlay geser-HP (mode lokal, giliran pemain manusia lain) -->
+                <div class="uno-overlay-abs" id="unoPassOverlay">
+                  <div class="uno-pass-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12V6a1.5 1.5 0 013 0v5m0-4a1.5 1.5 0 013 0v4m0-2.5a1.5 1.5 0 013 0V13m-9 3.5V17a5 5 0 005 5h1a5 5 0 005-4.5l.5-4a2 2 0 00-1.8-2.4"/></svg></div>
+                  <div class="uno-pass-title" id="unoPassTitle">Giliran Pemain</div>
+                  <div class="uno-pass-sub" id="unoPassSub"></div>
+                  <button class="uno-pass-btn" onclick="unoRevealHand()">Buka Kartu Saya</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="uno-selfhand-wrap">
+              <div class="uno-turn-indicator">
+                <div class="uno-turn-avatar" id="unoHandAvatar"></div>
+                <div class="uno-turn-text">
+                  <strong id="unoHandName"></strong>
+                  <span id="unoTurnStatus"></span>
+                </div>
+              </div>
+              <div class="uno-hand-fan" id="unoHandScroll"></div>
+              <div class="uno-hand-footer">
+                <span class="uno-hand-count-label" id="unoHandCount"></span>
+                <button class="uno-uno-btn" id="unoCallBtn" style="display:none" onclick="unoHandleCallUno()">UNO!</button>
+              </div>
+            </div>
+
+            <div class="uno-info-grid">
+              <div class="uno-panel uno-history-panel">
+                <div class="uno-panel-title">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Riwayat Permainan
+                </div>
+                <div class="uno-history-list" id="unoHistoryList"></div>
+              </div>
+              <div class="uno-panel uno-chat-panel">
+                <div class="uno-panel-title">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                  Chat Room
+                </div>
+                <div class="uno-chat-empty">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                  <strong>Obrolan permainan</strong>
+                  <span>Tetap sopan dan fokus.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- toast -->
+      <div class="uno-toast" id="unoToast"></div>
+
+      <!-- modal hasil -->
+      <div class="modal-overlay" id="unoResultModal">
+        <div class="modal">
+          <div class="modal-body">
+            <div class="uno-result-icon win" id="unoResultIcon"></div>
+            <div class="uno-result-title" id="unoResultTitle">Selesai</div>
+            <div class="uno-result-sub" id="unoResultSub"></div>
+            <div class="uno-result-btns">
+              <button class="uno-ctrl uno-primary" onclick="unoRematch()">Main Lagi</button>
+              <button class="uno-ctrl" onclick="unoBackToSetup()">Ke Menu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -566,10 +812,13 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
   <script src="script.js"></script>
   <script src="database.js"></script>
   <script src="musicplayer.js"></script>
   <script src="chess.js"></script>
+  <script src="uno.js"></script>
 </body>
 </html>

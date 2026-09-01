@@ -460,6 +460,7 @@ function masukWebsite() {
       playPromise.catch(err => tampilkanErrorMusik(err));
     }
   }
+  if (typeof authShowScreenIfNeeded === 'function') authShowScreenIfNeeded();
 }
 
 // ========== INIT ==========
