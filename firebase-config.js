@@ -23,3 +23,6 @@ firebase.initializeApp(firebaseConfig);
 
 // db = "pintu masuk" ke database Firestore, dipakai di database.js
 const db = firebase.firestore();
+
+// authFirebase = "pintu masuk" ke Firebase Authentication, dipakai di auth.js
+const authFirebase = firebase.auth();

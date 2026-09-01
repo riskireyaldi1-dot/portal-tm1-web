@@ -1,0 +1,70 @@
+// ============================================================================
+// FIRESTORE SECURITY RULES — Portal Kelas TM-1
+//
+// CARA PASANG:
+// 1. Buka console.firebase.google.com > project kamu > Firestore Database > tab "Rules"
+// 2. Hapus semua isi kotak rules yang lama
+// 3. Copy-paste SELURUH isi file ini ke kotak tersebut
+// 4. Klik "Publish"
+//
+// Rules ini adalah PENEGAKAN ASLI di server Firebase — bukan sekadar kode
+// JS di browser. Siapapun yang mencoba akses lewat cara lain (API langsung,
+// console browser, dsb) tetap akan ditolak Firebase kalau melanggar aturan
+// di bawah ini.
+// ============================================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: cek apakah user yang sedang login adalah admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ------------------------------------------------------------------
+    // COLLECTION "users" — profil, role, status, permission tiap akun
+    // ------------------------------------------------------------------
+    match /users/{userId} {
+      // Baca profil: pemilik akun sendiri, ATAU admin (untuk Admin Panel)
+      allow read: if request.auth != null &&
+        (request.auth.uid == userId || isAdmin());
+
+      // Bikin akun baru (signup): hanya boleh bikin dokumen ID = uid sendiri,
+      // dan WAJIB role "siswa" — tidak ada yang bisa daftar sebagai admin
+      // dari form signup biasa. Akun admin pertama HARUS dinaikkan manual
+      // lewat Firestore Console (lihat catatan di percakapan).
+      allow create: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.resource.data.role == 'siswa';
+
+      // Ubah profil: pemilik akun boleh ubah data dirinya (nama, dsb) TAPI
+      // TIDAK BOLEH mengubah role/status/permissions miliknya sendiri —
+      // itu mencegah siswa menaikkan hak aksesnya sendiri lewat request
+      // palsu. Admin boleh mengubah field apa saja untuk siapa saja.
+      allow update: if request.auth != null && (
+        isAdmin() ||
+        (request.auth.uid == userId &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.permissions == resource.data.permissions)
+      );
+
+      // Hapus akun: hanya admin.
+      allow delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // COLLECTION "dataSiswa" — fitur "Isi Data Saya" yang SUDAH ADA.
+    // Dibiarkan terbuka SAMA SEPERTI SEBELUM ada sistem login ini,
+    // supaya fitur lama tidak rusak. Kalau nanti mau dikunci juga
+    // (misalnya cuma siswa yang login yang boleh isi), tinggal ganti
+    // baris di bawah jadi: allow read, write: if request.auth != null;
+    // ------------------------------------------------------------------
+    match /dataSiswa/{docId} {
+      allow read, write: if true;
+    }
+
+  }
+}
