@@ -127,6 +127,10 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           Isi Data Saya
         </div>
+        <div class="nav-item" id="navAdminPanel" style="display:none" onclick="navigateTo('admin', this); adminIsiDaftarNama(); adminMuatDaftarUser();">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM4 20a8 8 0 1116 0"/></svg>
+          Admin Panel
+        </div>
         <div class="nav-item" id="navMusicPlayer" onclick="navigateTo('musicplayer', this)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           Music Player
@@ -349,6 +353,63 @@
             <button type="submit" id="isiDataSubmitBtn" class="isidata-submit-btn">Simpan Data</button>
             <div id="isiDataStatus" class="isidata-status"></div>
           </form>
+        </div>
+      </div>
+
+      <!-- ADMIN PANEL -->
+      <div class="page" id="page-admin">
+        <h3 class="section-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM4 20a8 8 0 1116 0"/></svg> Admin Panel</h3>
+        <p class="section-subtitle">Tambahkan akun login untuk siswa (atau admin lain)</p>
+
+        <div class="admin-layout">
+          <div class="isidata-card">
+            <p class="isidata-note">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1.5 1.5 0 001.3 2.25h17.76a1.5 1.5 0 001.3-2.25L13.71 3.86a1.5 1.5 0 00-2.42 0z"/></svg>
+              <span>Akun yang dibuat di sini bisa langsung dipakai siswa untuk login. Beri tahu email &amp; password-nya ke siswa yang bersangkutan.</span>
+            </p>
+
+            <form id="formTambahSiswa" class="isidata-form">
+              <label class="isidata-label" for="inputAdminNama">Nama</label>
+              <input type="text" id="inputAdminNama" class="search-input" list="adminNamaOptions" autocomplete="off" placeholder="Ketik untuk cari, lalu pilih nama siswa" required>
+              <datalist id="adminNamaOptions"></datalist>
+
+              <label class="isidata-label" for="inputAdminEmail">Email</label>
+              <input type="email" id="inputAdminEmail" class="search-input" placeholder="Contoh: nama@siswa.tm1" required>
+
+              <label class="isidata-label" for="inputAdminPassword">Password</label>
+              <input type="text" id="inputAdminPassword" class="search-input" placeholder="Minimal 6 karakter" required>
+
+              <label class="isidata-label" for="selectAdminRole">Role</label>
+              <select id="selectAdminRole" class="search-input">
+                <option value="siswa" selected>Siswa</option>
+                <option value="admin">Admin</option>
+              </select>
+
+              <button type="submit" id="adminTambahBtn" class="isidata-submit-btn">Tambah Akun</button>
+              <div id="adminTambahStatus" class="isidata-status"></div>
+            </form>
+
+            <div id="adminCredBox" class="admin-cred-box" style="display:none">
+              <div class="admin-cred-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Catat sekarang — password tidak bisa dilihat lagi setelah ini
+              </div>
+              <div class="admin-cred-row">
+                <span class="admin-cred-label">Email</span>
+                <span id="adminCredEmail" class="admin-cred-value"></span>
+              </div>
+              <div class="admin-cred-row">
+                <span class="admin-cred-label">Password</span>
+                <span id="adminCredPassword" class="admin-cred-value"></span>
+              </div>
+              <button type="button" id="adminCredCopyBtn" class="admin-cred-copy-btn">Salin Email &amp; Password</button>
+            </div>
+          </div>
+
+          <div class="admin-list-card">
+            <div class="admin-list-title">Daftar Akun Terdaftar</div>
+            <div id="adminUserList"><p class="admin-list-empty">Memuat daftar akun...</p></div>
+          </div>
         </div>
       </div>
 
@@ -815,6 +876,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="auth.js"></script>
+  <script src="admin.js"></script>
   <script src="script.js"></script>
   <script src="database.js"></script>
   <script src="musicplayer.js"></script>
