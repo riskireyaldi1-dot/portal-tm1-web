@@ -13,6 +13,32 @@ const AUTH = {
   ready: false,        // true setelah pengecekan status login awal selesai
 };
 
+// Halaman-halaman ini HANYA boleh diakses oleh yang sudah login (siswa/admin).
+// Tamu (belum login) tidak bisa buka menu-menu ini — baik lewat sidebar,
+// shortcut di beranda, maupun kalau ada yang coba panggil navigateTo()
+// langsung (lihat penjaga di navigateTo(), script.js).
+const AUTH_HALAMAN_TERBATAS = ['uno', 'chess', 'musicplayer', 'isidata', 'announcements'];
+
+// ID elemen nav-item / quick-item di sidebar & beranda yang perlu
+// disembunyikan total kalau statusnya masih Tamu (belum login).
+const AUTH_NAV_TERBATAS_IDS = ['navUno', 'navChess', 'navMusicPlayer', 'navIsiData', 'navAnnouncements', 'quickAnnouncements'];
+
+function authFiturUntukTamu(page) {
+  return !AUTH.user && AUTH_HALAMAN_TERBATAS.includes(page);
+}
+
+// Sembunyikan/tampilkan menu2 di atas sesuai status login sekarang.
+// Dipanggil dari authUpdateIdentityBox() supaya otomatis ter-refresh
+// tiap kali status login berubah (baru buka web, login, logout, lanjut
+// sebagai tamu).
+function authTerapkanBatasanTamu() {
+  const isTamu = !AUTH.user;
+  AUTH_NAV_TERBATAS_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isTamu ? 'none' : '';
+  });
+}
+
 const AUTH_ERROR_MESSAGES = {
   'auth/invalid-email': 'Format email tidak valid.',
   'auth/user-not-found': 'Email atau password salah.',
@@ -177,6 +203,7 @@ function authHideScreen() {
 function authUpdateIdentityBox() {
   const textEl = document.getElementById('authIdentityText');
   const btnEl = document.getElementById('authIdentityBtn');
+  authTerapkanBatasanTamu();
   if (!textEl || !btnEl) return;
   if (AUTH.user) {
     const name = (AUTH.profile && AUTH.profile.name) || AUTH.user.email;
@@ -200,4 +227,25 @@ document.addEventListener('DOMContentLoaded', () => {
       if (screen && !screen.classList.contains('hide')) authHideScreen();
     }
   });
+
+  // ------------------------------------------------------------
+  // Link "Lupa password?" di halaman Login.
+  // Karena password TIDAK BISA di-reset otomatis dari sisi web
+  // statis begini (lihat catatan di atas), siswa yang lupa
+  // password diarahkan chat WhatsApp ke admin kelas — pesannya
+  // otomatis kebawa email yang sempat mereka ketik di form Login,
+  // supaya admin langsung tahu akun mana yang dimaksud.
+  // ------------------------------------------------------------
+  const authForgotLink = document.getElementById('authForgotLink');
+  const authLoginEmailInput = document.getElementById('authLoginEmail');
+  if (authForgotLink) {
+    authForgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const emailTerisi = authLoginEmailInput ? authLoginEmailInput.value.trim() : '';
+      const pesan = emailTerisi
+        ? `Halo Admin, saya lupa password akun Portal Kelas TM-1 saya (${emailTerisi}). Mohon bantuan reset ya.`
+        : `Halo Admin, saya lupa password akun Portal Kelas TM-1 saya. Mohon bantuan reset ya.`;
+      window.open(`https://wa.me/${WA_NOMOR_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank', 'noopener');
+    });
+  }
 });

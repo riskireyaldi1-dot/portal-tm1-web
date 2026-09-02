@@ -149,6 +149,17 @@ const jadwal = {
 
 // ========== NAVIGATION (WEB A) ==========
 function navigateTo(page, element) {
+  // Penjaga akses: Tamu (belum login) tidak boleh masuk ke halaman-halaman
+  // tertentu (lihat AUTH_HALAMAN_TERBATAS di auth.js). Ini "jaring pengaman"
+  // kedua — menu-nya sendiri sudah disembunyikan untuk Tamu di sidebar/
+  // beranda, tapi kalau ada yang tetap coba masuk lewat cara lain, tetap
+  // diblokir di sini juga.
+  if (typeof authFiturUntukTamu === 'function' && authFiturUntukTamu(page)) {
+    alert('Fitur ini hanya untuk siswa yang sudah login. Silakan masuk (login) terlebih dahulu.');
+    if (typeof authShowScreenIfNeeded === 'function') authShowScreenIfNeeded(true);
+    return;
+  }
+
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
   if (element) element.classList.add('active');
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));

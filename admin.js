@@ -191,9 +191,9 @@ async function adminSalinKredensial() {
 // tidak dipakai di website statis ini). Jalan keluarnya: siswa
 // hubungi admin lewat WhatsApp, lalu admin PROSES MANUAL (hapus akun
 // lama di Admin Panel ini, lalu buat ulang dengan password baru).
+// (WA_NOMOR_ADMIN didefinisikan di firebase-config.js, dipakai bareng
+// dengan link "Lupa password?" di halaman Login — lihat auth.js)
 // ---------------------------------------------------------------
-const WA_NOMOR_ADMIN = '6281219525933'; // 081219525933, format internasional utk link wa.me
-
 function adminBuatLinkResetWA(nama, email) {
   const pesan = `Halo Admin, saya *${nama}* (${email}) ingin reset password akun Portal Kelas TM-1.`;
   return `https://wa.me/${WA_NOMOR_ADMIN}?text=${encodeURIComponent(pesan)}`;

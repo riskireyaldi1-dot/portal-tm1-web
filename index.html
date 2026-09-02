@@ -61,6 +61,7 @@
         <input type="email" id="authLoginEmail" placeholder="Email" autocomplete="email" required>
         <input type="password" id="authLoginPassword" placeholder="Password" autocomplete="current-password" required>
         <button type="submit" id="authLoginBtn">Masuk</button>
+        <a class="auth-forgot-link" id="authForgotLink" href="#" target="_blank" rel="noopener">Lupa password?</a>
       </form>
     </div>
 
@@ -111,7 +112,7 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342a3 3 0 100-2.684m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
           Media Sosial
         </div>
-        <div class="nav-item" onclick="navigateTo('announcements', this)">
+        <div class="nav-item" id="navAnnouncements" style="display:none" onclick="navigateTo('announcements', this)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
           Pengumuman
         </div>
@@ -123,7 +124,7 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Tentang Kelas
         </div>
-        <div class="nav-item" onclick="navigateTo('isidata', this)">
+        <div class="nav-item" id="navIsiData" style="display:none" onclick="navigateTo('isidata', this)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           Isi Data Saya
         </div>
@@ -131,16 +132,16 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM4 20a8 8 0 1116 0"/></svg>
           Admin Panel
         </div>
-        <div class="nav-item" id="navMusicPlayer" onclick="navigateTo('musicplayer', this)">
+        <div class="nav-item" id="navMusicPlayer" style="display:none" onclick="navigateTo('musicplayer', this)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           Music Player
           <span class="nav-music-indicator" id="navMusicIndicator" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
-        <div class="nav-item" id="navChess" onclick="navigateTo('chess', this)">
+        <div class="nav-item" id="navChess" style="display:none" onclick="navigateTo('chess', this)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6l1.5 7h-9L9 12z"/></svg>
           TM Chess
         </div>
-        <div class="nav-item" id="navUno" onclick="navigateTo('uno', this)">
+        <div class="nav-item" id="navUno" style="display:none" onclick="navigateTo('uno', this)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" stroke-width="2" transform="rotate(-8 12 12)"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
           UNO
         </div>
@@ -215,7 +216,7 @@
             <h4>Jadwal</h4>
             <p>Jadwal pelajaran harian</p>
           </div>
-          <div class="quick-item" onclick="navigateTo('announcements', document.querySelectorAll('.nav-item')[6])">
+          <div class="quick-item" id="quickAnnouncements" style="display:none" onclick="navigateTo('announcements', document.getElementById('navAnnouncements'))">
             <div class="quick-item-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg></div>
             <h4>Pengumuman</h4>
             <p>Info dan pengumuman kelas</p>
