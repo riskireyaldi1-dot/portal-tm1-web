@@ -52,20 +52,94 @@
     </div>
   </div>
 
-  <!-- AUTH SCREEN (Login / Daftar) -->
+  <!-- AUTH SCREEN (Login) — desain diadaptasi dari referensi "nexa",
+       disesuaikan ke tema Kelas TM-1 & Bahasa Indonesia. Semua ID elemen
+       (authScreen, authLoginForm, authLoginEmail, dst) SENGAJA dipertahankan
+       persis sama supaya auth.js tidak perlu diubah — cuma tampilannya saja
+       yang baru. -->
   <div class="auth-screen hide" id="authScreen">
-    <div class="auth-stage">
-      <form class="auth-form" id="authLoginForm" novalidate onsubmit="return authHandleLogin(event)">
-        <h2>Masuk</h2>
-        <div class="auth-error" id="authLoginError"></div>
-        <input type="email" id="authLoginEmail" placeholder="Email" autocomplete="email" required>
-        <input type="password" id="authLoginPassword" placeholder="Password" autocomplete="current-password" required>
-        <button type="submit" id="authLoginBtn">Masuk</button>
-        <a class="auth-forgot-link" id="authForgotLink" href="#" target="_blank" rel="noopener">Lupa password?</a>
-      </form>
-    </div>
+    <div class="login-shell">
 
-    <p class="auth-skip-note">Belum punya akun? Hubungi admin kelas untuk dibuatkan akun, atau <button type="button" class="auth-skip-btn" onclick="authContinueAsGuest()">lanjut sebagai Tamu</button></p>
+      <!-- Panel kiri — cuma tampil di layar lebar (desktop), otomatis
+           tersembunyi di HP (lihat media query di auth.css) -->
+      <section class="brand-panel" aria-hidden="true">
+        <div class="brand-panel-grid"></div>
+        <div class="brand-glow brand-glow-one"></div>
+        <div class="brand-glow brand-glow-two"></div>
+        <div class="brand-lines"><span></span><span></span><span></span></div>
+        <header class="brand-header">
+          <div class="brand-mark">
+            <img src="logo-sekolah.png" alt="" class="brand-mark-logo">
+            <span class="brand-name">Kelas TM-1</span>
+          </div>
+        </header>
+        <div class="brand-copy">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> PORTAL RESMI KELAS</div>
+          <h1>Selamat<br><em>datang kembali.</em></h1>
+          <p>Masuk untuk melanjutkan ke Portal Kelas TM-1 — akses data siswa, jadwal pelajaran, piket harian, dan lainnya.</p>
+        </div>
+        <div class="brand-footer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Data tersimpan aman &amp; privat</span>
+        </div>
+      </section>
+
+      <!-- Panel kanan — form login (ini yang tampil di HP) -->
+      <section class="form-panel">
+        <div class="form-wrap">
+          <div class="mobile-brand">
+            <img src="logo-sekolah.png" alt="" class="brand-mark-logo brand-mark-logo-small">
+            <span class="brand-name brand-name-small">Kelas TM-1</span>
+          </div>
+
+          <div class="login-card">
+            <div class="form-header">
+              <div class="form-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <div>
+                <p class="form-kicker">PORTAL KELAS</p>
+                <h2>Masuk</h2>
+              </div>
+              <p class="form-subtitle">Masukkan email dan password akunmu untuk melanjutkan.</p>
+            </div>
+
+            <form class="auth-form" id="authLoginForm" novalidate onsubmit="return authHandleLogin(event)">
+              <div class="auth-error" id="authLoginError"></div>
+
+              <div class="field-group">
+                <label for="authLoginEmail">Email</label>
+                <div class="input-shell">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  <input type="email" id="authLoginEmail" placeholder="nama@siswa.tm1" autocomplete="email" required>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="authLoginPassword">Password</label>
+                <div class="input-shell">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+                  <input type="password" id="authLoginPassword" placeholder="Masukkan password" autocomplete="current-password" required>
+                  <button type="button" class="visibility-button" id="authTogglePasswordBtn" aria-label="Tampilkan password">
+                    <svg id="authEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" id="authLoginBtn" class="submit-button">
+                <span>Masuk</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </button>
+
+              <a class="auth-forgot-link" id="authForgotLink" href="#" target="_blank" rel="noopener">Lupa password?</a>
+            </form>
+          </div>
+
+          <p class="auth-skip-note">Belum punya akun? Hubungi admin kelas untuk dibuatkan akun, atau <button type="button" class="auth-skip-btn" onclick="authContinueAsGuest()">lanjut sebagai Tamu</button></p>
+        </div>
+      </section>
+
+    </div>
   </div>
 
   <div class="bg-mesh"></div>

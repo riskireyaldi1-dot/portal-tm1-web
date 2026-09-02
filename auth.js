@@ -154,14 +154,18 @@ async function authHandleLogin(event) {
   const email = document.getElementById('authLoginEmail').value.trim();
   const password = document.getElementById('authLoginPassword').value;
   const btn = document.getElementById('authLoginBtn');
-  btn.disabled = true; btn.innerText = 'Memproses...';
+  // Catatan: tombol ini isinya <span>teks</span> + ikon SVG panah.
+  // Sengaja cuma ganti isi <span>-nya (bukan seluruh isi tombol),
+  // supaya ikon panahnya tidak ikut hilang pas teksnya berubah.
+  const btnLabel = btn.querySelector('span') || btn;
+  btn.disabled = true; btnLabel.textContent = 'Memproses...';
   try {
     await authLogIn(email, password);
     authHideScreen();
   } catch (err) {
     authShowErr('authLoginError', authFriendlyError(err));
   } finally {
-    btn.disabled = false; btn.innerText = 'Masuk';
+    btn.disabled = false; btnLabel.textContent = 'Masuk';
   }
   return false;
 }
@@ -227,6 +231,24 @@ document.addEventListener('DOMContentLoaded', () => {
       if (screen && !screen.classList.contains('hide')) authHideScreen();
     }
   });
+
+  // ------------------------------------------------------------
+  // Tombol mata di field Password — cuma tampilan/UX (ganti
+  // type="password" <-> "text"), tidak menyentuh cara login bekerja.
+  // ------------------------------------------------------------
+  const authTogglePasswordBtn = document.getElementById('authTogglePasswordBtn');
+  const authLoginPasswordInput = document.getElementById('authLoginPassword');
+  const authEyeIcon = document.getElementById('authEyeIcon');
+  const ICON_EYE = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+  const ICON_EYE_OFF = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>';
+  if (authTogglePasswordBtn && authLoginPasswordInput && authEyeIcon) {
+    authTogglePasswordBtn.addEventListener('click', () => {
+      const nowTampil = authLoginPasswordInput.type === 'password';
+      authLoginPasswordInput.type = nowTampil ? 'text' : 'password';
+      authEyeIcon.innerHTML = nowTampil ? ICON_EYE_OFF : ICON_EYE;
+      authTogglePasswordBtn.setAttribute('aria-label', nowTampil ? 'Sembunyikan password' : 'Tampilkan password');
+    });
+  }
 
   // ------------------------------------------------------------
   // Link "Lupa password?" di halaman Login.
