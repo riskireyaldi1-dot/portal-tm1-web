@@ -1,0 +1,141 @@
+/* ========================================================================
+   GAMEHUB.CSS — Leaderboard & Statistik Game (Chess + UNO)
+   Tema: Dark Elegant / Premium / Futuristic — black, dark navy, blue, cyan.
+   Sengaja file terpisah (tidak menimpa style.css) supaya halaman lain
+   tidak ikut berubah temanya.
+   ======================================================================== */
+
+.gh-wrap {
+  --gh-bg: #05070d;
+  --gh-panel: #0b1120;
+  --gh-panel-2: #101a30;
+  --gh-line: rgba(148, 197, 255, 0.14);
+  --gh-fg: #eaf2ff;
+  --gh-muted: #7f93b8;
+  --gh-blue: #2563eb;
+  --gh-cyan: #22d3ee;
+  --gh-good: #34d399;
+  --gh-bad: #f87171;
+  background: radial-gradient(circle at 50% -10%, #0e1a3355 0, var(--gh-bg) 60%);
+  color: var(--gh-fg);
+  border-radius: 18px;
+  padding: 24px;
+  min-height: calc(100vh - 140px);
+}
+
+.gh-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.gh-tab {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--gh-line);
+  background: var(--gh-panel);
+  color: var(--gh-muted);
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.gh-tab:hover { color: var(--gh-fg); border-color: var(--gh-cyan); }
+.gh-tab.active {
+  background: linear-gradient(135deg, var(--gh-blue), var(--gh-cyan));
+  color: #05070d;
+  border-color: transparent;
+}
+
+.gh-panel {
+  background: var(--gh-panel);
+  border: 1px solid var(--gh-line);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+}
+.gh-panel + .gh-panel { margin-top: 18px; }
+
+.gh-panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--gh-fg);
+  letter-spacing: .02em;
+}
+
+.gh-table { width: 100%; border-collapse: collapse; }
+.gh-table th {
+  text-align: left;
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gh-muted);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--gh-line);
+}
+.gh-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--gh-line);
+  font-size: .94rem;
+}
+.gh-table tr:last-child td { border-bottom: none; }
+.gh-table tr.gh-me {
+  background: linear-gradient(90deg, rgba(37,99,235,.16), rgba(34,211,238,.10));
+}
+.gh-rank { font-weight: 700; color: var(--gh-cyan); width: 40px; }
+.gh-rank-1 { color: #ffd25e; }
+.gh-rank-2 { color: #d7dee8; }
+.gh-rank-3 { color: #d59a63; }
+.gh-name { font-weight: 600; }
+.gh-you-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: .68rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--gh-cyan);
+  color: #05070d;
+  font-weight: 700;
+}
+.gh-num { color: var(--gh-fg); font-variant-numeric: tabular-nums; }
+.gh-empty { color: var(--gh-muted); padding: 24px 10px; text-align: center; font-size: .92rem; }
+
+.gh-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.gh-stat-card {
+  background: var(--gh-panel-2);
+  border: 1px solid var(--gh-line);
+  border-radius: 14px;
+  padding: 18px;
+}
+.gh-stat-card h4 {
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gh-muted);
+  margin: 0 0 12px;
+}
+.gh-stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: .93rem;
+  border-bottom: 1px dashed var(--gh-line);
+}
+.gh-stat-row:last-child { border-bottom: none; }
+.gh-stat-row b { color: var(--gh-cyan); font-variant-numeric: tabular-nums; }
+
+.gh-login-notice {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--gh-muted);
+}
+
+@media (max-width: 640px) {
+  .gh-wrap { padding: 16px; border-radius: 12px; }
+  .gh-table th:nth-child(4), .gh-table td:nth-child(4) { display: none; }
+}

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="musicplayer.css">
   <link rel="stylesheet" href="chess.css">
   <link rel="stylesheet" href="uno.css">
+  <link rel="stylesheet" href="gamehub.css">
   <link rel="stylesheet" href="auth.css">
 </head>
 <body>
@@ -215,9 +216,13 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6l1.5 7h-9L9 12z"/></svg>
           TM Chess
         </div>
-        <div class="nav-item" id="navUno" style="display:none" onclick="navigateTo('uno', this)">
+        <div class="nav-item" id="navUno" style="display:none" onclick="navigateTo('uno', this); unoOnPageOpen();">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" stroke-width="2" transform="rotate(-8 12 12)"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
           UNO
+        </div>
+        <div class="nav-item" id="navGameHub" style="display:none" onclick="navigateTo('gamehub', this); ghOnPageOpen();">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-9 0h14a1 1 0 001-1V9.5a1 1 0 00-.4-.8L12 3 4.4 8.7a1 1 0 00-.4.8V18a1 1 0 001 1z"/></svg>
+          Leaderboard Game
         </div>
       </nav>
       <div class="sidebar-footer">
@@ -560,7 +565,7 @@
               <button aria-label="Layar Penuh" title="Layar Penuh" class="tmc-fullscreen-btn" onclick="tmcToggleFullscreen()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V5a1 1 0 011-1h3m9 0h3a1 1 0 011 1v3m0 8v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg>
               </button>
-              <button aria-label="Menu" title="Kembali ke Menu" onclick="tmcBackToSetup()">
+              <button aria-label="Menu" title="Kembali ke Menu" onclick="tmcBackToSetupClick()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 6h14M5 18h14"/></svg>
               </button>
             </div>
@@ -569,11 +574,52 @@
           <!-- SETUP -->
           <div style="padding:28px 22px" id="tmcSetupCard">
             <div class="tmc-setup-card">
+
               <div class="tmc-setup-group">
-                <div class="tmc-setup-label">Nama Pemain</div>
-                <div class="tmc-chip-row" style="gap:12px">
-                  <input type="text" id="tmcNameWInput" class="tmc-name-input" placeholder="Pemain Putih">
-                  <input type="text" id="tmcNameBInput" class="tmc-name-input" placeholder="Pemain Hitam">
+                <div class="tmc-setup-label">Mode Permainan</div>
+                <div class="tmc-chip-row">
+                  <div class="tmc-chip tmc-mode-chip active" id="tmcModeChipLocal" onclick="tcoSwitchSetupMode('local')">Lokal (1 Perangkat)</div>
+                  <div class="tmc-chip tmc-mode-chip" id="tmcModeChipOnline" onclick="tcoSwitchSetupMode('online')">Online (Lawan Akun Lain)</div>
+                </div>
+              </div>
+
+              <!-- MODE LOKAL: 2 pemain di 1 perangkat, isi nama manual seperti sebelumnya -->
+              <div id="tmcLocalSetupPanel">
+                <div class="tmc-setup-group">
+                  <div class="tmc-setup-label">Nama Pemain</div>
+                  <div class="tmc-chip-row" style="gap:12px">
+                    <input type="text" id="tmcNameWInput" class="tmc-name-input" placeholder="Pemain Putih">
+                    <input type="text" id="tmcNameBInput" class="tmc-name-input" placeholder="Pemain Hitam">
+                  </div>
+                </div>
+              </div>
+
+              <!-- MODE ONLINE: identitas otomatis dari akun login, tidak ada input nama -->
+              <div id="tmcOnlineSetupPanel" style="display:none">
+                <div class="tmc-setup-group">
+                  <div class="tmc-setup-label">Akun Kamu</div>
+                  <div id="tmcOnlineMyIdentity" class="tmc-online-identity">Memuat akun...</div>
+                </div>
+                <div class="tmc-setup-group" id="tmcOnlinePlayGroup">
+                  <div class="tmc-setup-label">Cara Bermain</div>
+                  <div class="tmc-chip-row">
+                    <div class="tmc-chip tmc-online-mode-chip active" onclick="tcoSelectOnlineMode('quick', this)">Cari Lawan (Quick Match)</div>
+                    <div class="tmc-chip tmc-online-mode-chip" onclick="tcoSelectOnlineMode('code', this)">Kode Room</div>
+                  </div>
+
+                  <div id="tmcQuickMatchPanel" style="margin-top:14px">
+                    <button class="tmc-start-btn" id="tmcQuickMatchBtn" onclick="tcoStartQuickMatch()">Cari Lawan Sekarang</button>
+                  </div>
+
+                  <div id="tmcRoomCodePanel" style="margin-top:14px;display:none">
+                    <button class="tmc-start-btn" onclick="tcoCreateRoomCode()">Buat Room Baru</button>
+                    <div class="tmc-chip-row" style="gap:10px;margin-top:10px;align-items:center">
+                      <input type="text" id="tmcJoinCodeInput" class="tmc-name-input" placeholder="Kode Room (6 karakter)" maxlength="6" style="text-transform:uppercase">
+                      <button class="tmc-ctrl" onclick="tcoJoinRoomCode()">Gabung</button>
+                    </div>
+                  </div>
+
+                  <div id="tmcOnlineStatusBox" class="tmc-online-status" style="display:none"></div>
                 </div>
               </div>
 
@@ -606,9 +652,14 @@
                   <span>Efek suara langkah, tangkap, skak, dsb.</span>
                   <div class="tmc-switch on" id="tmcSoundSwitch" onclick="tmcToggleSound(this)"></div>
                 </div>
+                <div class="tmc-volume-row">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19 9a5 5 0 010 6"/></svg>
+                  <input type="range" min="0" max="100" value="70" class="tmc-volume-slider" oninput="tmcSetVolume(this.value)">
+                  <span class="tmc-volume-value">70%</span>
+                </div>
               </div>
 
-              <button class="tmc-start-btn" onclick="tmcHandleStartClick()">Mulai Permainan</button>
+              <button class="tmc-start-btn" id="tmcLocalStartBtn" onclick="tmcHandleStartClick()">Mulai Permainan</button>
             </div>
           </div>
 
@@ -620,6 +671,7 @@
                   <div class="tmc-avatar" id="tmcAvatarB">B</div>
                   <div class="tmc-bar-name-wrap">
                     <span class="tmc-bar-name" id="tmcNameB">Pemain Hitam</span>
+                    <span class="tmc-bar-rating" id="tmcRatingB" style="display:none"></span>
                     <div class="tmc-bar-caps" id="tmcCapturedB"></div>
                   </div>
                 </div>
@@ -637,6 +689,7 @@
                   <div class="tmc-avatar" id="tmcAvatarW">W</div>
                   <div class="tmc-bar-name-wrap">
                     <span class="tmc-bar-name" id="tmcNameW">Pemain Putih</span>
+                    <span class="tmc-bar-rating" id="tmcRatingW" style="display:none"></span>
                     <div class="tmc-bar-caps" id="tmcCapturedW"></div>
                   </div>
                 </div>
@@ -646,7 +699,7 @@
               <div class="tmc-mobile-controls">
                 <button class="tmc-ctrl tmc-undo-btn" onclick="tmcHandleUndo()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4 4-4m-4 4h11a4 4 0 010 8h-1"/></svg><span>Undo</span></button>
                 <button class="tmc-ctrl" onclick="tmcOfferDraw()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9h14M5 15h14"/></svg><span>Seri</span></button>
-                <button class="tmc-ctrl tmc-ctrl-danger" onclick="tmcResign(TMC.turn)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3v18M6 4h9l-2 3 2 3H6"/></svg><span>Resign</span></button>
+                <button class="tmc-ctrl tmc-ctrl-danger" onclick="tmcResignClick()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3v18M6 4h9l-2 3 2 3H6"/></svg><span>Resign</span></button>
                 <button class="tmc-ctrl" onclick="tmcToggleMoveSheet()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Riwayat</span></button>
               </div>
             </section>
@@ -684,7 +737,7 @@
               <div class="tmc-side-controls">
                 <button class="tmc-ctrl tmc-undo-btn" onclick="tmcHandleUndo()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4 4-4m-4 4h11a4 4 0 010 8h-1"/></svg>Undo</button>
                 <button class="tmc-ctrl" onclick="tmcOfferDraw()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9h14M5 15h14"/></svg>Seri</button>
-                <button class="tmc-ctrl tmc-ctrl-danger" onclick="tmcResign(TMC.turn)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3v18M6 4h9l-2 3 2 3H6"/></svg>Resign</button>
+                <button class="tmc-ctrl tmc-ctrl-danger" onclick="tmcResignClick()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3v18M6 4h9l-2 3 2 3H6"/></svg>Resign</button>
               </div>
             </aside>
           </div>
@@ -724,8 +777,8 @@
               <div class="tmc-result-title" id="tmcResultTitle">Selesai</div>
               <div class="tmc-result-sub" id="tmcResultSub"></div>
               <div class="tmc-controls-row" style="justify-content:center;display:flex;gap:8px">
-                <button class="tmc-start-btn" style="margin:0;flex:1" onclick="tmcRematch()">Main Lagi</button>
-                <button class="tmc-ctrl tmc-modal-btn" onclick="tmcBackToSetup()">Ke Menu</button>
+                <button class="tmc-start-btn" style="margin:0;flex:1" onclick="tmcRematchClick()">Main Lagi</button>
+                <button class="tmc-ctrl tmc-modal-btn" onclick="tmcBackToSetupClick()">Ke Menu</button>
               </div>
             </div>
           </div>
@@ -744,8 +797,8 @@
               <div class="uno-header-title">UNO</div>
             </div>
             <div class="uno-header-meta">
-              <div class="uno-meta-item"><span class="uno-meta-label">Mode</span><span class="uno-meta-value" id="unoHeaderMode">—</span></div>
-              <div class="uno-meta-item"><span class="uno-meta-label">Putaran</span><span class="uno-meta-value" id="unoHeaderRound">1</span></div>
+              <div class="uno-meta-item"><span class="uno-meta-label">Kode Room</span><span class="uno-meta-value" id="unoHeaderMode">—</span></div>
+              <div class="uno-meta-item"><span class="uno-meta-label">Pemain</span><span class="uno-meta-value" id="unoHeaderRound">—</span></div>
             </div>
             <div class="uno-header-actions">
               <button aria-label="Layar Penuh" title="Layar Penuh" class="uno-fullscreen-btn" onclick="unoToggleFullscreen()">
@@ -760,67 +813,49 @@
             </div>
           </div>
 
-          <!-- SETUP -->
+          <!-- SETUP: BUAT ROOM / GABUNG ROOM -->
           <div style="padding:10px 20px" id="unoSetupCard">
             <div class="uno-setup-card">
               <div class="uno-setup-group">
-                <div class="uno-setup-label">Mode Permainan</div>
-                <div class="uno-mode-row">
-                  <div class="uno-mode-btn active" onclick="unoSelectMode('bot', this)">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M4 8h16M5 8h14a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a1 1 0 011-1zM9 13h.01M15 13h.01"/></svg>
-                    <strong>Vs Bot</strong>
-                    <span>Main sendiri lawan AI</span>
-                  </div>
-                  <div class="uno-mode-btn" onclick="unoSelectMode('local', this)">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
-                    <strong>Multiplayer Lokal</strong>
-                    <span>Gantian di 1 HP</span>
-                  </div>
+                <div class="uno-setup-label">Akun Kamu</div>
+                <div class="uno-identity-box" id="unoIdentityBox">Memuat akun...</div>
+              </div>
+
+              <div class="uno-setup-group">
+                <div class="uno-setup-label">Jumlah Pemain (Maks)</div>
+                <div class="uno-chip-row">
+                  <div class="uno-chip uno-maxplayers-chip" onclick="unoSelectMaxPlayers(2, this)">2 Pemain</div>
+                  <div class="uno-chip uno-maxplayers-chip" onclick="unoSelectMaxPlayers(3, this)">3 Pemain</div>
+                  <div class="uno-chip uno-maxplayers-chip active" onclick="unoSelectMaxPlayers(4, this)">4 Pemain</div>
                 </div>
               </div>
 
-              <div id="unoBotOptions">
-                <div class="uno-setup-group">
-                  <div class="uno-setup-label">Nama Kamu</div>
-                  <input type="text" id="unoBotPlayerName" class="uno-name-input" placeholder="Pemain" maxlength="14">
-                </div>
-                <div class="uno-setup-group">
-                  <div class="uno-setup-label">Jumlah Bot</div>
-                  <div class="uno-chip-row">
-                    <div class="uno-chip uno-botcount-chip" onclick="unoSelectBotCount(1, this)">1 Bot</div>
-                    <div class="uno-chip uno-botcount-chip active" onclick="unoSelectBotCount(2, this)">2 Bot</div>
-                    <div class="uno-chip uno-botcount-chip" onclick="unoSelectBotCount(3, this)">3 Bot</div>
-                  </div>
-                </div>
-                <div class="uno-setup-group">
-                  <div class="uno-setup-label">Kesulitan Bot</div>
-                  <div class="uno-chip-row">
-                    <div class="uno-chip uno-diff-chip diff-easy" onclick="unoSelectDifficulty('easy', this)">Easy</div>
-                    <div class="uno-chip uno-diff-chip diff-normal active" onclick="unoSelectDifficulty('normal', this)">Normal</div>
-                    <div class="uno-chip uno-diff-chip diff-hard" onclick="unoSelectDifficulty('hard', this)">Hard</div>
-                  </div>
+              <button class="uno-start-btn" onclick="unoCreateRoom()">Buat Room Baru</button>
+
+              <div class="uno-setup-divider">Atau</div>
+
+              <div class="uno-setup-group">
+                <div class="uno-setup-label">Gabung dengan Kode Room</div>
+                <div class="uno-join-row">
+                  <input type="text" id="unoJoinCodeInput" class="uno-name-input" placeholder="KODE ROOM" maxlength="6" style="margin-bottom:0">
+                  <button onclick="unoJoinRoom()">Gabung</button>
                 </div>
               </div>
 
-              <div id="unoLocalOptions" style="display:none">
-                <div class="uno-setup-group">
-                  <div class="uno-setup-label">Jumlah Pemain</div>
-                  <div class="uno-chip-row">
-                    <div class="uno-chip uno-localcount-chip active" onclick="unoSelectLocalCount(2, this)">2 Pemain</div>
-                    <div class="uno-chip uno-localcount-chip" onclick="unoSelectLocalCount(3, this)">3 Pemain</div>
-                    <div class="uno-chip uno-localcount-chip" onclick="unoSelectLocalCount(4, this)">4 Pemain</div>
-                  </div>
-                </div>
-                <div class="uno-setup-group">
-                  <div class="uno-setup-label">Nama Pemain</div>
-                  <div id="unoLocalNames">
-                    <input type="text" class="uno-name-input uno-local-name-input" placeholder="Nama Pemain 1" maxlength="14">
-                    <input type="text" class="uno-name-input uno-local-name-input" placeholder="Nama Pemain 2" maxlength="14">
-                  </div>
-                </div>
-              </div>
+              <div class="uno-setup-notice" id="unoSetupNotice" style="display:none"></div>
+            </div>
+          </div>
 
-              <button class="uno-start-btn" onclick="unoHandleStartClick()">Mulai Permainan</button>
+          <!-- LOBBY: ruang tunggu sebelum game dimulai -->
+          <div style="padding:10px 20px;display:none" id="unoLobbyCard">
+            <div class="uno-lobby-card">
+              <div class="uno-lobby-code-label">Kode Room</div>
+              <div class="uno-lobby-code" id="unoLobbyCode">------</div>
+              <div class="uno-lobby-code-hint">Bagikan kode ini ke teman untuk bergabung</div>
+              <div class="uno-lobby-players" id="unoLobbyPlayers"></div>
+              <div class="uno-lobby-status" id="unoLobbyStatus">Menunggu pemain lain...</div>
+              <button class="uno-start-btn" id="unoLobbyStartBtn" style="display:none" onclick="unoStartGame()">Mulai Permainan</button>
+              <button class="uno-start-btn uno-btn-secondary" onclick="unoLeaveLobby()">Batalkan / Keluar Lobby</button>
             </div>
           </div>
 
@@ -859,12 +894,11 @@
                   </div>
                 </div>
 
-                <!-- overlay geser-HP (mode lokal, giliran pemain manusia lain) -->
-                <div class="uno-overlay-abs" id="unoPassOverlay">
-                  <div class="uno-pass-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12V6a1.5 1.5 0 013 0v5m0-4a1.5 1.5 0 013 0v4m0-2.5a1.5 1.5 0 013 0V13m-9 3.5V17a5 5 0 005 5h1a5 5 0 005-4.5l.5-4a2 2 0 00-1.8-2.4"/></svg></div>
-                  <div class="uno-pass-title" id="unoPassTitle">Giliran Pemain</div>
-                  <div class="uno-pass-sub" id="unoPassSub"></div>
-                  <button class="uno-pass-btn" onclick="unoRevealHand()">Buka Kartu Saya</button>
+                <!-- overlay menunggu giliran / koneksi (mode online) -->
+                <div class="uno-overlay-abs" id="unoWaitOverlay">
+                  <div class="uno-pass-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                  <div class="uno-pass-title" id="unoWaitTitle">Menunggu...</div>
+                  <div class="uno-pass-sub" id="unoWaitSub"></div>
                 </div>
               </div>
             </div>
@@ -905,6 +939,44 @@
               </div>
             </div>
 
+          </div>
+        </div>
+      </div>
+
+      <!-- GAME HUB: Leaderboard & Statistik (Chess + UNO, terpisah) -->
+      <div class="page" id="page-gamehub">
+        <div class="gh-wrap">
+          <div class="gh-tabs">
+            <div class="gh-tab active" data-tab="chess" onclick="ghSwitchTab('chess')">Chess Leaderboard</div>
+            <div class="gh-tab" data-tab="uno" onclick="ghSwitchTab('uno')">UNO Leaderboard</div>
+            <div class="gh-tab" data-tab="stats" onclick="ghSwitchTab('stats')">Statistik Saya</div>
+          </div>
+
+          <div class="gh-panel-section" data-section="chess">
+            <div class="gh-panel">
+              <div class="gh-panel-title">Chess Leaderboard</div>
+              <table class="gh-table">
+                <thead><tr><th>Rank</th><th>Pemain</th><th>Rating</th><th>Win</th><th>Draw</th><th>Loss</th></tr></thead>
+                <tbody id="ghChessLeaderboardBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="gh-panel-section" data-section="uno" style="display:none">
+            <div class="gh-panel">
+              <div class="gh-panel-title">UNO Leaderboard</div>
+              <table class="gh-table">
+                <thead><tr><th>Rank</th><th>Pemain</th><th>Points</th><th>Games</th><th>Podium</th></tr></thead>
+                <tbody id="ghUnoLeaderboardBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="gh-panel-section" data-section="stats" style="display:none">
+            <div class="gh-panel">
+              <div class="gh-panel-title">My Game Stats</div>
+              <div id="ghMyStatsBody"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -955,7 +1027,10 @@
   <script src="script.js"></script>
   <script src="database.js"></script>
   <script src="musicplayer.js"></script>
+  <script src="gamedata.js"></script>
+  <script src="gamehub.js"></script>
   <script src="chess.js"></script>
+  <script src="chess-online.js"></script>
   <script src="uno.js"></script>
 </body>
 </html>

@@ -465,12 +465,9 @@ if (musikSekolah) {
 function masukWebsite() {
   const welcomeScreen = document.getElementById('welcomeScreen');
   if (welcomeScreen) welcomeScreen.classList.add('hide');
-  if (musikSekolah) {
-    const playPromise = musikSekolah.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(err => tampilkanErrorMusik(err));
-    }
-  }
+  // CATATAN: musik SENGAJA tidak diputar otomatis di sini lagi. Website
+  // dibuka = musik tetap diam, user harus tekan tombol Play sendiri
+  // (di sidebar atau di halaman Music Player) baru musik main.
   if (typeof authShowScreenIfNeeded === 'function') authShowScreenIfNeeded();
 }
 
