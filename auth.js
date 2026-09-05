@@ -17,11 +17,11 @@ const AUTH = {
 // Tamu (belum login) tidak bisa buka menu-menu ini — baik lewat sidebar,
 // shortcut di beranda, maupun kalau ada yang coba panggil navigateTo()
 // langsung (lihat penjaga di navigateTo(), script.js).
-const AUTH_HALAMAN_TERBATAS = ['uno', 'chess', 'musicplayer', 'isidata', 'announcements'];
+const AUTH_HALAMAN_TERBATAS = ['uno', 'chess', 'gamehub', 'musicplayer', 'isidata', 'announcements'];
 
 // ID elemen nav-item / quick-item di sidebar & beranda yang perlu
 // disembunyikan total kalau statusnya masih Tamu (belum login).
-const AUTH_NAV_TERBATAS_IDS = ['navUno', 'navChess', 'navMusicPlayer', 'navIsiData', 'navAnnouncements', 'quickAnnouncements'];
+const AUTH_NAV_TERBATAS_IDS = ['navUno', 'navChess', 'navGameHub', 'navMusicPlayer', 'navIsiData', 'navAnnouncements', 'quickAnnouncements'];
 
 function authFiturUntukTamu(page) {
   return !AUTH.user && AUTH_HALAMAN_TERBATAS.includes(page);
@@ -37,6 +37,11 @@ function authTerapkanBatasanTamu() {
     const el = document.getElementById(id);
     if (el) el.style.display = isTamu ? 'none' : '';
   });
+
+  // ===== DEBUG SEMENTARA — hapus setelah "Leaderboard Game" ketemu masalahnya =====
+  const gh = document.getElementById('navGameHub');
+  alert('DEBUG NAV GAMEHUB:\nAUTH.user ada? ' + !!AUTH.user + '\nisTamu=' + isTamu + '\nelemen ketemu? ' + !!gh + '\nstyle.display sekarang="' + (gh ? gh.style.display : '(elemen tidak ada)') + '"\ncomputed display="' + (gh ? getComputedStyle(gh).display : '-') + '"\nAUTH.profile.role=' + (AUTH.profile ? AUTH.profile.role : '(profile null)'));
+  // ===== AKHIR DEBUG =====
 }
 
 const AUTH_ERROR_MESSAGES = {
