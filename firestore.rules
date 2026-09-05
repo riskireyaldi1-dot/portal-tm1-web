@@ -27,9 +27,12 @@ service cloud.firestore {
     // COLLECTION "users" — profil, role, status, permission tiap akun
     // ------------------------------------------------------------------
     match /users/{userId} {
-      // Baca profil: pemilik akun sendiri, ATAU admin (untuk Admin Panel)
-      allow read: if request.auth != null &&
-        (request.auth.uid == userId || isAdmin());
+      // Baca profil: SEMUA akun yang sudah login boleh baca (bukan cuma admin/diri
+      // sendiri) — dibutuhkan supaya Leaderboard Chess/UNO bisa menampilkan
+      // rating & statistik semua siswa. Data di sini (nama, role, status,
+      // permissions, chess, uno) bukan data pribadi sensitif (bukan
+      // email/telepon/dsb), jadi aman dibaca antar-siswa satu kelas.
+      allow read: if request.auth != null;
 
       // Bikin akun baru (signup): boleh dilakukan oleh 2 pihak —
       // 1) ADMIN, lewat Admin Panel, boleh bikin dokumen untuk UID
