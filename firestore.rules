@@ -171,14 +171,48 @@ service cloud.firestore {
     }
 
     match /chessRooms/{roomId} {
+      // Turn dihitung dari jumlah langkah tersimpan: genap = giliran putih, ganjil = giliran hitam.
+      // Ini membuat giliran TIDAK BISA dipalsukan dari client — dihitung ulang dari data server sendiri.
+      function tmCurrentTurnUid() {
+        let n = resource.data.moves.size();
+        let turnColor = n % 2 == 0 ? 'w' : 'b';
+        return resource.data.colors[turnColor];
+      }
+      // Hanya boleh MENAMBAH satu langkah di akhir array, oleh uid yang memang gilirannya,
+      // sekalian update clock (turnStartedAt/clockRemaining) — tidak boleh nyelundup ubah
+      // field lain (status/hasil/dsb lewat jalur ini).
+      function tmChessMoveValid() {
+        let n = resource.data.moves.size();
+        let turnColor = n % 2 == 0 ? 'w' : 'b';
+        let oppColor = turnColor == 'w' ? 'b' : 'w';
+        let inc = resource.data.timeControl.inc;
+        let beforeClock = resource.data.clockRemaining;
+        let afterClock = request.resource.data.clockRemaining;
+        return resource.data.status == 'playing'
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['moves', 'updatedAt', 'clockRemaining', 'turnStartedAt'])
+          && request.resource.data.moves.size() == n + 1
+          && request.auth.uid == tmCurrentTurnUid()
+          // clock lawan (yang TIDAK jalan gilirannya) tidak boleh ikut berubah
+          && afterClock[oppColor] == beforeClock[oppColor]
+          // clock milik sendiri cuma boleh berkurang (dia mikir) lalu ditambah increment —
+          // tidak boleh digelembungkan lebih dari before + increment (anti "nambah waktu sendiri")
+          && afterClock[turnColor] <= beforeClock[turnColor] + inc
+          && afterClock[turnColor] >= 0;
+      }
       allow read: if request.auth != null &&
         (resource.data.status == 'waiting' || request.auth.uid in resource.data.playerIds);
       allow create: if request.auth != null &&
         request.resource.data.playerIds.size() == 1 &&
         request.resource.data.playerIds[0] == request.auth.uid &&
         request.resource.data.status == 'waiting';
-      allow update: if request.auth != null &&
-        (tmRoomJoinTransitionValid() || request.auth.uid in resource.data.playerIds);
+      allow update: if request.auth != null && (
+        tmRoomJoinTransitionValid() ||
+        tmChessMoveValid() ||
+        (request.auth.uid in resource.data.playerIds &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'result', 'updatedAt']))
+      );
       allow delete: if request.auth != null &&
         resource.data.status == 'waiting' && request.auth.uid in resource.data.playerIds;
     }

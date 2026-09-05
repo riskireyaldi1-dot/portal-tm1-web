@@ -167,6 +167,10 @@ async function tcoCreateRoom(mode, roomCode) {
     colors: { [id.uid]: 'w' },
     timeControl,
     moves: [],
+    // Clock server-authoritative: sisa detik tiap warna + kapan giliran berjalan mulai (jam SERVER).
+    // Semua client menghitung sisa waktu dari dua angka ini, bukan dari timer lokal masing-masing.
+    clockRemaining: { w: timeControl.init, b: timeControl.init },
+    turnStartedAt: firebase.firestore.FieldValue.serverTimestamp(),
     result: null,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -197,6 +201,10 @@ async function tcoJoinRoom(roomId) {
         ratings: { ...data.ratings, [id.uid]: stats.chess.rating },
         colors: { ...data.colors, [id.uid]: 'b' },
         status: 'playing',
+        // Reset patokan clock ke SEKARANG — supaya waktu tunggu lawan join
+        // tidak ikut kepotong dari jatah mikir pemain pertama.
+        clockRemaining: { w: data.timeControl.init, b: data.timeControl.init },
+        turnStartedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     });
@@ -243,6 +251,9 @@ function tcoListenRoom(roomId) {
     }
 
     if (TMC.started && TMC.onlineRoomId === roomId) {
+      // Perbarui patokan clock server setiap ada update room (giliran baru = turnStartedAt baru).
+      if (room.turnStartedAt) TMC.onlineTurnStartedAtMs = room.turnStartedAt.toMillis();
+      if (room.clockRemaining) TMC.onlineClockBaseline = room.clockRemaining;
       // Terapkan langkah baru yang belum ada di papan lokal, urut sesuai server.
       const moves = room.moves || [];
       while (TCO.appliedMoveCount < moves.length) {
@@ -274,6 +285,10 @@ function tcoBeginLocalGameFromRoom(room) {
   TMC.players = { [myColor]: room.names[id.uid], [oppColor]: room.names[oppUid] };
   TMC.timeControl = room.timeControl;
   TMC.clocks = { w: room.timeControl.init, b: room.timeControl.init };
+  // Patokan clock server-authoritative — dipakai tmcStartClockTick() untuk menghitung
+  // sisa waktu dari jam server, bukan hitung mundur lokal per-device.
+  TMC.onlineClockBaseline = room.clockRemaining || { w: room.timeControl.init, b: room.timeControl.init };
+  TMC.onlineTurnStartedAtMs = room.turnStartedAt ? room.turnStartedAt.toMillis() : Date.now();
   TMC.theme = 'ivory';
   TMC.soundOn = document.getElementById('tmcSoundSwitch').classList.contains('on');
   TMC.started = true;
@@ -295,14 +310,28 @@ function tcoBeginLocalGameFromRoom(room) {
 async function tcoSendMove(move) {
   const ref = db.collection('chessRooms').doc(TMC.onlineRoomId);
   const expectedCount = TCO.appliedMoveCount;
+  const moverColor = TMC.onlineMyColor;
   try {
     await db.runTransaction(async (tx) => {
       const doc = await tx.get(ref);
       const data = doc.data();
       if (data.status !== 'playing') throw new Error('Game sudah selesai.');
       if ((data.moves || []).length !== expectedCount) throw new Error('Papan tidak sinkron, muat ulang.');
+      // Kurangi waktu milik pemain yang baru saja jalan sesuai berapa lama dia mikir,
+      // dihitung dari turnStartedAt (jam SERVER) — bukan timer lokal. Lawan (warna
+      // satunya) tidak disentuh sama sekali, sesuai yang divalidasi firestore.rules.
+      const turnStartedMs = data.turnStartedAt ? data.turnStartedAt.toMillis() : Date.now();
+      const elapsedSec = Math.max(0, Math.floor((Date.now() - turnStartedMs) / 1000));
+      const before = (data.clockRemaining || { w: data.timeControl.init, b: data.timeControl.init })[moverColor];
+      const afterThink = Math.max(0, before - elapsedSec);
+      const newRemaining = {
+        ...(data.clockRemaining || { w: data.timeControl.init, b: data.timeControl.init }),
+        [moverColor]: afterThink + (data.timeControl.inc || 0),
+      };
       tx.update(ref, {
         moves: [...(data.moves || []), move],
+        clockRemaining: newRemaining,
+        turnStartedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     });

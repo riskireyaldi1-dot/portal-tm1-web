@@ -35,6 +35,8 @@ const TMC = {
   onlineMyColor: null,     // 'w' | 'b' — warna yang dikendalikan akun yang login
   onlineUids: { w: null, b: null },
   onlineRatingBefore: { w: null, b: null }, // rating dibekukan saat room dimulai, dipakai hitung ELO
+  onlineTurnStartedAtMs: null,   // timestamp SERVER (ms) kapan giliran saat ini mulai — patokan clock, bukan hitungan lokal
+  onlineClockBaseline: { w: 0, b: 0 }, // sisa detik tiap warna PERSIS seperti tercatat di server saat giliran ini mulai
 };
 
 // ---------------------------------------------------------------
@@ -417,6 +419,24 @@ function tmcStartClockTick() {
   TMC.clockRunning = true;
   TMC.clockTimer = setInterval(() => {
     if (TMC.gameOver) { clearInterval(TMC.clockTimer); return; }
+    if (TMC.onlineRoomId && TMC.onlineTurnStartedAtMs) {
+      // ONLINE: sisa waktu dihitung dari patokan waktu SERVER (turnStartedAt),
+      // bukan hitung-mundur lokal murni. Ini memastikan kedua device selalu
+      // menampilkan angka yang sama, dan setelah reconnect/refresh langsung
+      // benar (bukan ke-reset ke waktu penuh atau nyimpang gara-gara jam HP beda-beda).
+      const elapsedSec = Math.floor((Date.now() - TMC.onlineTurnStartedAtMs) / 1000);
+      const remaining = Math.max(0, TMC.onlineClockBaseline[TMC.turn] - elapsedSec);
+      TMC.clocks[TMC.turn] = remaining;
+      TMC.clocks[tmcOpp(TMC.turn)] = TMC.onlineClockBaseline[tmcOpp(TMC.turn)];
+      tmcRenderClocks();
+      if (remaining === 0) {
+        clearInterval(TMC.clockTimer);
+        tmcEndGame(tmcOpp(TMC.turn), 'timeout');
+        tmcRender();
+      }
+      return;
+    }
+    // LOKAL (1 perangkat): hitung mundur biasa, tidak ada server untuk dijadikan patokan.
     TMC.clocks[TMC.turn] = Math.max(0, TMC.clocks[TMC.turn] - 1);
     if (TMC.clocks[TMC.turn] === 0) {
       clearInterval(TMC.clockTimer);
@@ -719,12 +739,6 @@ function tmcRenderBoard() {
 function tmcOnSquareClick(r, c) {
   if (TMC.gameOver || !TMC.started) return;
   const piece = TMC.board[r][c];
-
-  // ===== DEBUG SEMENTARA — hapus setelah bug "bisa gerak bidak lawan" ketemu =====
-  if (piece) {
-    alert('DEBUG KLIK BIDAK:\npiece.color=' + piece.color + '\nTMC.turn=' + TMC.turn + '\nonlineRoomId=' + TMC.onlineRoomId + '\nonlineMyColor=' + TMC.onlineMyColor + '\nLOLOS GUARD? ' + (piece.color === TMC.turn && (!TMC.onlineRoomId || TMC.turn === TMC.onlineMyColor)));
-  }
-  // ===== AKHIR DEBUG =====
 
   if (TMC.selected) {
     const chosen = TMC.legalForSelected.find(m => m.to.r === r && m.to.c === c);
