@@ -24,10 +24,17 @@ const TMC = {
   clockRunning: false,
   theme: 'ivory',
   soundOn: true,
+  soundVolume: 0.7, // 0..1, dikontrol slider volume di setup & topbar
   players: { w: 'Pemain Putih', b: 'Pemain Hitam' },
   drawOfferBy: null,
   started: false,
   boardFlipped: false,
+
+  // ---- Field khusus MODE ONLINE (diisi/dipakai oleh chess-online.js) ----
+  onlineRoomId: null,      // null = permainan lokal biasa
+  onlineMyColor: null,     // 'w' | 'b' — warna yang dikendalikan akun yang login
+  onlineUids: { w: null, b: null },
+  onlineRatingBefore: { w: null, b: null }, // rating dibekukan saat room dimulai, dipakai hitung ELO
 };
 
 // ---------------------------------------------------------------
@@ -447,27 +454,31 @@ function tmcGetNoiseBuffer(ctx) {
   return buf;
 }
 
-// "ketukan" bidak/papan — noise pendek disaring lewat bandpass (terasa seperti kayu)
-function tmcNoiseHit(ctx, t, { duration = 0.05, freq = 1500, q = 2, gain = 0.22, type = 'bandpass' } = {}) {
+// "ketukan" bidak/papan — noise pendek disaring lewat lowpass (lembut,
+// seperti kayu tumpul, BUKAN bandpass ber-Q tinggi yang berdenging tajam)
+function tmcNoiseHit(ctx, t, { duration = 0.05, freq = 1200, q = 0.7, gain = 0.16, type = 'lowpass' } = {}) {
   const src = ctx.createBufferSource();
   src.buffer = tmcGetNoiseBuffer(ctx);
   const filter = ctx.createBiquadFilter();
   filter.type = type; filter.frequency.value = freq; filter.Q.value = q;
   const g = ctx.createGain();
+  const vol = gain * TMC.soundVolume;
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(gain, t + 0.004);
+  g.gain.linearRampToValueAtTime(vol, t + 0.006);
   g.gain.exponentialRampToValueAtTime(0.0001, t + duration);
   src.connect(filter); filter.connect(g); g.connect(ctx.destination);
   src.start(t); src.stop(t + duration + 0.02);
 }
 
-// nada dengan sedikit harmonisa supaya tidak terdengar seperti beep 8-bit polos
-function tmcTone(ctx, t, { freq = 440, duration = 0.12, gain = 0.15, wave = 'sine', harmonic = 0 } = {}) {
+// nada lembut (sine/triangle saja — hindari gelombang kotak/gigi gergaji
+// yang terdengar kasar), dengan sedikit harmonisa supaya tetap hangat
+function tmcTone(ctx, t, { freq = 440, duration = 0.12, gain = 0.11, wave = 'sine', harmonic = 0 } = {}) {
+  const vol = gain * TMC.soundVolume;
   const osc = ctx.createOscillator();
   osc.type = wave; osc.frequency.value = freq;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
+  g.gain.linearRampToValueAtTime(vol, t + 0.015);
   g.gain.exponentialRampToValueAtTime(0.0001, t + duration);
   osc.connect(g); g.connect(ctx.destination);
   osc.start(t); osc.stop(t + duration + 0.02);
@@ -476,7 +487,7 @@ function tmcTone(ctx, t, { freq = 440, duration = 0.12, gain = 0.15, wave = 'sin
     osc2.type = wave; osc2.frequency.value = freq * 2;
     const g2 = ctx.createGain();
     g2.gain.setValueAtTime(0.0001, t);
-    g2.gain.exponentialRampToValueAtTime(gain * harmonic, t + 0.01);
+    g2.gain.linearRampToValueAtTime(vol * harmonic, t + 0.015);
     g2.gain.exponentialRampToValueAtTime(0.0001, t + duration * 0.7);
     osc2.connect(g2); g2.connect(ctx.destination);
     osc2.start(t); osc2.stop(t + duration + 0.02);
@@ -484,52 +495,58 @@ function tmcTone(ctx, t, { freq = 440, duration = 0.12, gain = 0.15, wave = 'sin
 }
 
 function tmcPlaySound(kind) {
-  if (!TMC.soundOn) return;
+  if (!TMC.soundOn || TMC.soundVolume <= 0) return;
   try {
     if (!tmcAudioCtx) tmcAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const ctx = tmcAudioCtx;
     if (ctx.state === 'suspended') ctx.resume();
     const t = ctx.currentTime;
     switch (kind) {
+      // Langkah biasa: satu ketukan kayu lembut + nada rendah pendek — jelas
+      // ada feedback, tapi tidak mengagetkan.
       case 'move':
-        tmcNoiseHit(ctx, t, { duration: 0.05, freq: 1500, q: 2.4, gain: 0.24 });
-        tmcTone(ctx, t, { freq: 175, duration: 0.06, gain: 0.10 });
+        tmcNoiseHit(ctx, t, { duration: 0.05, freq: 1100, q: 0.7, gain: 0.15 });
+        tmcTone(ctx, t, { freq: 165, duration: 0.05, gain: 0.06 });
         break;
+      // Capture: ketukan lebih "berat" (frekuensi lebih rendah) + nada bass
+      // sedikit lebih panjang — terasa beda dari move biasa tanpa jadi kasar.
       case 'capture':
-        tmcNoiseHit(ctx, t, { duration: 0.07, freq: 950, q: 1.3, gain: 0.34 });
-        tmcNoiseHit(ctx, t + 0.035, { duration: 0.05, freq: 2200, q: 3, gain: 0.16 });
-        tmcTone(ctx, t, { freq: 130, duration: 0.09, gain: 0.15, wave: 'triangle' });
+        tmcNoiseHit(ctx, t, { duration: 0.07, freq: 750, q: 0.7, gain: 0.20 });
+        tmcTone(ctx, t, { freq: 120, duration: 0.09, gain: 0.09, wave: 'triangle' });
         break;
+      // Check: 2 nada pendek naik — sinyal "waspada" tapi tetap nada bulat (sine).
       case 'check':
-        tmcTone(ctx, t, { freq: 740, duration: 0.11, gain: 0.16, harmonic: 0.5 });
-        tmcTone(ctx, t + 0.11, { freq: 988, duration: 0.17, gain: 0.17, harmonic: 0.5 });
+        tmcTone(ctx, t, { freq: 660, duration: 0.10, gain: 0.10, harmonic: 0.3 });
+        tmcTone(ctx, t + 0.10, { freq: 880, duration: 0.14, gain: 0.11, harmonic: 0.3 });
         break;
+      // Checkmate/game over: 3 nada turun, tegas tapi tetap lembut (triangle+sine).
       case 'checkmate':
-        tmcTone(ctx, t, { freq: 587, duration: 0.15, gain: 0.15, wave: 'triangle', harmonic: 0.4 });
-        tmcTone(ctx, t + 0.14, { freq: 494, duration: 0.15, gain: 0.15, wave: 'triangle', harmonic: 0.4 });
-        tmcTone(ctx, t + 0.28, { freq: 392, duration: 0.45, gain: 0.19, wave: 'triangle', harmonic: 0.5 });
+        tmcTone(ctx, t, { freq: 523, duration: 0.16, gain: 0.12, wave: 'triangle', harmonic: 0.3 });
+        tmcTone(ctx, t + 0.15, { freq: 440, duration: 0.16, gain: 0.12, wave: 'triangle', harmonic: 0.3 });
+        tmcTone(ctx, t + 0.30, { freq: 330, duration: 0.42, gain: 0.14, wave: 'triangle', harmonic: 0.35 });
         break;
+      // Menang: arpeggio naik yang enak didengar, tanpa noise burst tajam di akhir.
       case 'victory':
-        [392, 494, 587, 784, 988].forEach((f, i) => tmcTone(ctx, t + i * 0.1, { freq: f, duration: 0.22, gain: 0.15, wave: 'triangle', harmonic: 0.45 }));
-        tmcNoiseHit(ctx, t + 0.4, { duration: 0.5, freq: 3200, q: 0.5, gain: 0.07, type: 'highpass' });
+        [392, 494, 587, 784].forEach((f, i) => tmcTone(ctx, t + i * 0.11, { freq: f, duration: 0.24, gain: 0.11, wave: 'triangle', harmonic: 0.3 }));
+        tmcTone(ctx, t + 0.44, { freq: 988, duration: 0.4, gain: 0.13, wave: 'triangle', harmonic: 0.35 });
         break;
+      // Draw/seri: 3 nada datar, netral (tidak menang tidak kalah).
       case 'draw':
-        tmcTone(ctx, t, { freq: 523, duration: 0.16, gain: 0.14, harmonic: 0.25 });
-        tmcTone(ctx, t + 0.15, { freq: 440, duration: 0.16, gain: 0.14, harmonic: 0.25 });
-        tmcTone(ctx, t + 0.30, { freq: 349, duration: 0.28, gain: 0.14, harmonic: 0.25 });
+        tmcTone(ctx, t, { freq: 494, duration: 0.15, gain: 0.10, harmonic: 0.2 });
+        tmcTone(ctx, t + 0.14, { freq: 440, duration: 0.15, gain: 0.10, harmonic: 0.2 });
+        tmcTone(ctx, t + 0.28, { freq: 349, duration: 0.26, gain: 0.10, harmonic: 0.2 });
         break;
       case 'start':
-        [392, 494, 587, 784].forEach((f, i) => tmcTone(ctx, t + i * 0.09, { freq: f, duration: 0.14, gain: 0.14, wave: 'triangle', harmonic: 0.3 }));
+        [392, 494, 587].forEach((f, i) => tmcTone(ctx, t + i * 0.09, { freq: f, duration: 0.13, gain: 0.10, wave: 'triangle', harmonic: 0.25 }));
         break;
       case 'end':
-        tmcTone(ctx, t, { freq: 494, duration: 0.18, gain: 0.13, harmonic: 0.3 });
-        tmcTone(ctx, t + 0.16, { freq: 392, duration: 0.3, gain: 0.13, harmonic: 0.3 });
+        tmcTone(ctx, t, { freq: 440, duration: 0.16, gain: 0.09, harmonic: 0.2 });
         break;
       case 'click':
-        tmcNoiseHit(ctx, t, { duration: 0.02, freq: 2600, q: 3, gain: 0.13 });
+        tmcNoiseHit(ctx, t, { duration: 0.02, freq: 2200, q: 0.6, gain: 0.08 });
         break;
       default:
-        tmcNoiseHit(ctx, t, { duration: 0.05, freq: 1500, q: 2.2, gain: 0.2 });
+        tmcNoiseHit(ctx, t, { duration: 0.05, freq: 1100, q: 0.7, gain: 0.14 });
     }
   } catch (e) { /* audio tidak tersedia, abaikan */ }
 }
@@ -545,6 +562,10 @@ function tmcEndGame(winner, reason) {
   if (reason === 'checkmate') tmcPlaySound('checkmate');
   setTimeout(() => tmcPlaySound(winner ? 'victory' : 'draw'), reason === 'checkmate' ? 500 : 0);
   setTimeout(() => tmcShowResultModal(), 250);
+  // Mode online: serahkan pencatatan rating/riwayat match ke chess-online.js.
+  // Fungsi ini AMAN dipanggil dua kali (oleh kedua client) — chess-online.js
+  // memastikan penulisan match log tidak dobel.
+  if (TMC.onlineRoomId && typeof tcoOnGameEnd === 'function') tcoOnGameEnd(winner, reason);
 }
 
 function tmcResign(color) {
@@ -555,6 +576,10 @@ function tmcResign(color) {
 
 function tmcOfferDraw() {
   if (TMC.gameOver || !TMC.started) return;
+  if (TMC.onlineRoomId) {
+    alert('Tawaran seri untuk mode online belum tersedia di versi ini. Gunakan Resign kalau ingin mengakhiri game.');
+    return;
+  }
   if (TMC.drawOfferBy && TMC.drawOfferBy !== TMC.turn) {
     tmcEndGame(null, 'agreement');
     tmcRender();
@@ -695,6 +720,12 @@ function tmcOnSquareClick(r, c) {
   if (TMC.gameOver || !TMC.started) return;
   const piece = TMC.board[r][c];
 
+  // ===== DEBUG SEMENTARA — hapus setelah bug "bisa gerak bidak lawan" ketemu =====
+  if (piece) {
+    alert('DEBUG KLIK BIDAK:\npiece.color=' + piece.color + '\nTMC.turn=' + TMC.turn + '\nonlineRoomId=' + TMC.onlineRoomId + '\nonlineMyColor=' + TMC.onlineMyColor + '\nLOLOS GUARD? ' + (piece.color === TMC.turn && (!TMC.onlineRoomId || TMC.turn === TMC.onlineMyColor)));
+  }
+  // ===== AKHIR DEBUG =====
+
   if (TMC.selected) {
     const chosen = TMC.legalForSelected.find(m => m.to.r === r && m.to.c === c);
     if (chosen) {
@@ -703,11 +734,10 @@ function tmcOnSquareClick(r, c) {
         tmcShowPromotionChoice(chosen);
         return;
       }
-      tmcPushSnapshot();
-      tmcMakeMove(chosen);
+      tmcSubmitMove(chosen);
       return;
     }
-    if (piece && piece.color === TMC.turn) {
+    if (piece && piece.color === TMC.turn && (!TMC.onlineRoomId || TMC.turn === TMC.onlineMyColor)) {
       tmcPlaySound('click');
       TMC.selected = { r, c };
       TMC.legalForSelected = tmcLegalMoves(TMC, r, c);
@@ -719,12 +749,28 @@ function tmcOnSquareClick(r, c) {
     return;
   }
 
-  if (piece && piece.color === TMC.turn) {
+  if (piece && piece.color === TMC.turn && (!TMC.onlineRoomId || TMC.turn === TMC.onlineMyColor)) {
     tmcPlaySound('click');
     TMC.selected = { r, c };
     TMC.legalForSelected = tmcLegalMoves(TMC, r, c);
     tmcRenderBoard();
   }
+}
+
+// Titik tunggal setiap langkah pemain lokal dipicu dari sini.
+// - Lokal (1 perangkat): langsung diterapkan seperti sebelumnya.
+// - Online: TIDAK langsung diterapkan di client sendiri. Dikirim ke
+//   Firestore dulu, papan baru berubah setelah listener room menerima
+//   giliran ini kembali (dari server) — supaya kedua pemain selalu
+//   melihat urutan langkah yang identik, tidak pernah "beda papan".
+function tmcSubmitMove(move) {
+  if (!TMC.onlineRoomId) {
+    tmcPushSnapshot();
+    tmcMakeMove(move);
+    return;
+  }
+  if (TMC.turn !== TMC.onlineMyColor) return; // jaga-jaga, bukan giliran kita
+  if (typeof tcoSendMove === 'function') tcoSendMove(move);
 }
 
 function tmcShowPromotionChoice(baseMove) {
@@ -738,8 +784,7 @@ function tmcShowPromotionChoice(baseMove) {
     btn.innerHTML = tmcPieceSvg(pt, TMC.turn);
     btn.onclick = () => {
       modal.classList.remove('active');
-      tmcPushSnapshot();
-      tmcMakeMove({ ...baseMove, promotion: pt });
+      tmcSubmitMove({ ...baseMove, promotion: pt });
     };
     wrap.appendChild(btn);
   });
@@ -808,6 +853,16 @@ function tmcRenderPlayerBars() {
   const avB = document.getElementById('tmcAvatarB');
   if (avW) avW.innerText = (TMC.players.w || 'W').trim().charAt(0).toUpperCase();
   if (avB) avB.innerText = (TMC.players.b || 'B').trim().charAt(0).toUpperCase();
+  const ratW = document.getElementById('tmcRatingW');
+  const ratB = document.getElementById('tmcRatingB');
+  if (ratW) {
+    if (TMC.onlineRoomId && TMC.onlineRatingBefore.w != null) { ratW.style.display = ''; ratW.innerText = TMC.onlineRatingBefore.w + ' Rating'; }
+    else ratW.style.display = 'none';
+  }
+  if (ratB) {
+    if (TMC.onlineRoomId && TMC.onlineRatingBefore.b != null) { ratB.style.display = ''; ratB.innerText = TMC.onlineRatingBefore.b + ' Rating'; }
+    else ratB.style.display = 'none';
+  }
 }
 
 function tmcRenderStatus() {
@@ -828,7 +883,7 @@ function tmcRenderStatus() {
 }
 
 function tmcRenderControls() {
-  document.querySelectorAll('.tmc-undo-btn').forEach(btn => { btn.disabled = TMC.gameOver || TMC.history.length === 0; });
+  document.querySelectorAll('.tmc-undo-btn').forEach(btn => { btn.disabled = TMC.gameOver || TMC.history.length === 0 || !!TMC.onlineRoomId; });
 }
 
 function tmcTimeControlLabel() {
@@ -910,6 +965,11 @@ function tmcToggleSound(el) {
   if (TMC.soundOn) tmcPlaySound('click');
 }
 
+function tmcSetVolume(val) {
+  TMC.soundVolume = Math.max(0, Math.min(1, val / 100));
+  document.querySelectorAll('.tmc-volume-value').forEach(el => { el.innerText = val + '%'; });
+}
+
 function tmcFlipBoard() {
   TMC.boardFlipped = !TMC.boardFlipped;
   tmcPlaySound('click');
@@ -981,6 +1041,10 @@ function tmcResetGameKeepSetup() {
   TMC.captured = { w: [], b: [] };
   TMC.drawOfferBy = null;
   TMC.boardFlipped = false;
+  TMC.onlineRoomId = null;
+  TMC.onlineMyColor = null;
+  TMC.onlineUids = { w: null, b: null };
+  TMC.onlineRatingBefore = { w: null, b: null };
 }
 
 function tmcStartGame(nameW, nameB, timeControl, soundOn) {
@@ -1017,7 +1081,7 @@ function tmcHandleStartClick() {
 
 // Undo yang aman: pakai snapshot stack
 function tmcHandleUndo() {
-  if (TMC.gameOver || TMC._snapshots.length === 0) return;
+  if (TMC.gameOver || TMC._snapshots.length === 0 || TMC.onlineRoomId) return;
   tmcRestoreSnapshot();
   tmcRender();
 }
