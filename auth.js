@@ -37,11 +37,6 @@ function authTerapkanBatasanTamu() {
     const el = document.getElementById(id);
     if (el) el.style.display = isTamu ? 'none' : '';
   });
-
-  // ===== DEBUG SEMENTARA — hapus setelah "Leaderboard Game" ketemu masalahnya =====
-  const gh = document.getElementById('navGameHub');
-  alert('DEBUG NAV GAMEHUB:\nAUTH.user ada? ' + !!AUTH.user + '\nisTamu=' + isTamu + '\nelemen ketemu? ' + !!gh + '\nstyle.display sekarang="' + (gh ? gh.style.display : '(elemen tidak ada)') + '"\ncomputed display="' + (gh ? getComputedStyle(gh).display : '-') + '"\nAUTH.profile.role=' + (AUTH.profile ? AUTH.profile.role : '(profile null)'));
-  // ===== AKHIR DEBUG =====
 }
 
 const AUTH_ERROR_MESSAGES = {
