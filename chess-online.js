@@ -339,7 +339,7 @@ async function tcoSendMove(move) {
     // dengan lawan), bukan diterapkan dua kali secara manual di sini.
   } catch (err) {
     console.error('Gagal mengirim langkah:', err);
-    alert('Gagal mengirim langkah (koneksi bermasalah). Coba lagi.');
+    alert('Gagal mengirim langkah: ' + err.message);
   }
 }
 
