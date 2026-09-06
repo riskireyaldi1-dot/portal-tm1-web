@@ -647,6 +647,11 @@ function unoRenderHandArea(room) {
   const isMyTurn = room.currentTurnUid === UNOG.myUid;
   const iAmOut = room.winnerOrder.includes(UNOG.myUid);
 
+  // Tangan pemain nempel di bawah layar biasanya, mengambang naik penuh
+  // begitu giliran sendiri tiba (murni CSS, cuma toggle 1 class di sini).
+  const wrapEl = document.querySelector('.uno-selfhand-wrap');
+  if (wrapEl) wrapEl.classList.toggle('uno-my-turn', isMyTurn && !iAmOut);
+
   if (nameEl) nameEl.innerText = UNOG.myName || 'Kamu';
   if (avatarEl) avatarEl.innerText = (UNOG.myName || '?').charAt(0).toUpperCase();
   if (statusEl) {
