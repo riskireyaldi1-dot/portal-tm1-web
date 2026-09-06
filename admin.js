@@ -229,8 +229,8 @@ async function adminMuatDaftarUser() {
     });
 
     adminUserList.innerHTML = daftarUser.map(u => {
-      const namaAman = (u.name || '(tanpa nama)').replace(/</g, '&lt;');
-      const emailAman = (u.email || '-').replace(/</g, '&lt;');
+      const namaAman = ghEsc(u.name || '(tanpa nama)');
+      const emailAman = ghEsc(u.email || '-');
       const noAbsen = u.studentNo ? `No. Absen ${u.studentNo} • ` : '';
       const linkWA = adminBuatLinkResetWA(u.name || '-', u.email || '-');
       return `

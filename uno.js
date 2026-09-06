@@ -376,9 +376,11 @@ function unoRenderLobby(room) {
   room.playerIds.forEach((uid, i) => {
     const isHost = uid === room.hostUid;
     const isMe = uid === UNOG.myUid;
+    const safeName = ghEsc(room.playerNames[uid] || 'Pemain');
+    const initial = ghEsc((room.playerNames[uid] || '?').charAt(0).toUpperCase());
     html += `<div class="uno-lobby-player">
-      <div class="uno-lobby-avatar" style="background:${colors[i % colors.length]}">${(room.playerNames[uid] || '?').charAt(0).toUpperCase()}</div>
-      <div class="uno-lobby-player-name">${room.playerNames[uid] || 'Pemain'}</div>
+      <div class="uno-lobby-avatar" style="background:${colors[i % colors.length]}">${initial}</div>
+      <div class="uno-lobby-player-name">${safeName}</div>
       ${isHost ? '<span class="uno-lobby-host-badge">Host</span>' : ''}
       ${isMe ? '<span class="uno-lobby-you-badge">Kamu</span>' : ''}
     </div>`;
@@ -459,6 +461,20 @@ function unoListenRoom(roomId) {
 
     if (room.status === 'lobby') {
       unoRenderLobby(room);
+      return;
+    }
+
+    // Lawan keluar di tengah game -> pertandingan dibatalkan (tidak dihitung
+    // menang/kalah). Beri tahu pemain yang masih ada, lalu otomatis pulang ke menu.
+    if (room.status === 'cancelled') {
+      if (!UNOG.finishHandled) {
+        UNOG.finishHandled = true;
+        const namaKeluar = room.playerNames[room.cancelledBy] || 'Salah satu pemain';
+        if (room.cancelledBy !== UNOG.myUid) {
+          alert(namaKeluar + ' keluar dari game. Pertandingan dibatalkan (tidak dihitung menang/kalah).');
+        }
+        unoBackToSetup();
+      }
       return;
     }
 
@@ -606,9 +622,11 @@ function unoRenderArena(room) {
     const isOut = room.winnerOrder.includes(uid);
     const count = room.handCounts[uid] || 0;
     const rankIdx = room.winnerOrder.indexOf(uid);
+    const safeName = ghEsc(room.playerNames[uid] || 'Pemain');
+    const initial = ghEsc((room.playerNames[uid] || '?').charAt(0).toUpperCase());
     el.innerHTML = `
-      <div class="uno-opp-avatar-ring" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#2a1412;font-weight:800;font-size:14px;${isTurn ? 'box-shadow:0 0 0 3px var(--u-cyan),0 0 16px var(--u-glow);' : ''}">${(room.playerNames[uid] || '?').charAt(0).toUpperCase()}</div>
-      <div style="font-size:12px;font-weight:700;text-align:center">${room.playerNames[uid] || 'Pemain'}${isOut ? ' (#' + (rankIdx + 1) + ')' : ''}</div>
+      <div class="uno-opp-avatar-ring" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#2a1412;font-weight:800;font-size:14px;${isTurn ? 'box-shadow:0 0 0 3px var(--u-cyan),0 0 16px var(--u-glow);' : ''}">${initial}</div>
+      <div style="font-size:12px;font-weight:700;text-align:center">${safeName}${isOut ? ' (#' + (rankIdx + 1) + ')' : ''}</div>
       <div style="font-size:11px;color:var(--u-muted)">${isOut ? 'Selesai' : count + ' kartu'}</div>
     `;
   });
@@ -852,7 +870,27 @@ function unoCloseResultModal() {
 // ---------------------------------------------------------------
 // KEMBALI KE MENU / KELUAR ROOM
 // ---------------------------------------------------------------
-function unoBackToSetup() {
+async function unoBackToSetup() {
+  // Kalau game masih berjalan (bukan lobby/sudah selesai/sudah batal),
+  // keluar lewat sini berarti MEMBATALKAN pertandingan untuk semua orang —
+  // wajib konfirmasi dulu, dan wajib lapor ke server SEBELUM kabur dari
+  // halaman, supaya pemain lain tidak nunggu selamanya.
+  if (UNOG.roomId && UNOG.room && UNOG.room.status === 'playing') {
+    const yakin = confirm('Keluar sekarang akan membatalkan pertandingan ini untuk semua pemain (tidak dihitung menang/kalah). Yakin mau keluar?');
+    if (!yakin) return;
+    try {
+      await db.collection('unoRooms').doc(UNOG.roomId).update({
+        status: 'cancelled',
+        cancelledBy: UNOG.myUid,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('Gagal membatalkan room UNO:', err);
+      alert('Gagal keluar (koneksi bermasalah): ' + err.message);
+      return; // jangan lanjut bersihkan tampilan kalau gagal lapor ke server
+    }
+  }
+
   unoCloseResultModal();
   if (UNOG.unsubRoom) { UNOG.unsubRoom(); UNOG.unsubRoom = null; }
   if (UNOG.unsubHand) { UNOG.unsubHand(); UNOG.unsubHand = null; }

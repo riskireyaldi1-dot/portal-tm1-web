@@ -40,10 +40,10 @@ async function tcoRefreshIdentityBox() {
     return;
   }
   playGroup.style.display = '';
-  box.innerHTML = `<span>${id.name}</span><span class="tmc-online-identity-rating">Memuat rating...</span>`;
+  box.innerHTML = `<span>${ghEsc(id.name)}</span><span class="tmc-online-identity-rating">Memuat rating...</span>`;
   try {
     const stats = await gdGetMyGameStats();
-    box.innerHTML = `<span>${id.name}</span><span class="tmc-online-identity-rating">${stats.chess.rating} Rating</span>`;
+    box.innerHTML = `<span>${ghEsc(id.name)}</span><span class="tmc-online-identity-rating">${stats.chess.rating} Rating</span>`;
   } catch (err) {
     console.error('Gagal memuat rating:', err);
   }
